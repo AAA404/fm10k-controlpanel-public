@@ -3,6 +3,8 @@ set -eu
 if [ "$1" = purge ]; then
     deb-systemd-helper purge fm10k-panel.service >/dev/null || true
     deb-systemd-helper purge fm10k-time.socket >/dev/null || true
+    deb-systemd-helper purge fm10k-update.socket >/dev/null || true
+    deb-systemd-helper purge fm10k-update-worker.service >/dev/null || true
 fi
 if [ -d /run/systemd/system ]; then systemctl daemon-reload; fi
 # Configuration, certificates, and administrator state are retained.

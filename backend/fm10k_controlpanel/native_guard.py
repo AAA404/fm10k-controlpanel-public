@@ -150,6 +150,8 @@ def prepare_cpu_network() -> dict:
 def verify_startup(profile: str) -> dict:
     if os.geteuid() != 0:
         raise ValueError("native startup checks require root")
+    from .update_gate import verify_update_gate
+    verify_update_gate()
     # Vendor shared memory retains process pointers and non-robust locks.
     # A fresh systemd IPC namespace makes every SDK lifetime independent.
     if os.readlink("/proc/self/ns/ipc") == os.readlink("/proc/1/ns/ipc"):

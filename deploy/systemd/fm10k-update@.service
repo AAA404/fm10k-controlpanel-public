@@ -1,0 +1,25 @@
+[Unit]
+Description=FM10840 authenticated release update request
+
+[Service]
+Type=exec
+User=root
+ExecStart=/usr/bin/python3 -I /usr/lib/fm10k-controlpanel/entry.py update-helper
+StandardInput=socket
+StandardOutput=socket
+StandardError=journal
+RuntimeMaxSec=40
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/fm10k-controlpanel-updates /run/fm10k-update

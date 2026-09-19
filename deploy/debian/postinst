@@ -8,13 +8,17 @@ configure)
     fi
     adduser fm10k-web netlab-ipc
     install -d -o fm10k-web -g fm10k-web -m 0750 /var/lib/fm10k-controlpanel
+    install -d -o root -g root -m 0700 /var/lib/fm10k-controlpanel-updates
     install -d -o root -g root -m 0755 /etc/systemd/timesyncd.conf.d
     if [ -d /run/systemd/system ]; then
         systemctl daemon-reload
         deb-systemd-helper enable fm10k-panel.service >/dev/null
         deb-systemd-helper enable fm10k-time.socket >/dev/null
-        deb-systemd-invoke start fm10k-time.socket || true
-        deb-systemd-invoke restart fm10k-panel.service || true
+        deb-systemd-helper enable fm10k-update.socket >/dev/null
+        if [ "${FM10K_PACKAGE_NO_START:-0}" != 1 ]; then
+            deb-systemd-invoke start fm10k-time.socket fm10k-update.socket || true
+            deb-systemd-invoke restart fm10k-panel.service || true
+        fi
     fi
     ;;
 esac

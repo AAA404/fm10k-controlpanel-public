@@ -212,14 +212,14 @@ const assert = require('node:assert/strict')
     await page.setViewportSize({width:1440,height:1080})
     await page.getByRole('button',{name:'系统与维护',exact:true}).click()
     const ota = page.locator('.ota-updates')
-    assert.equal(await ota.getByRole('button',{name:'在线升级尚未启用',exact:true}).isDisabled(),true)
+    assert.equal(await ota.getByRole('button',{name:'检查更新',exact:true}).isDisabled(),true)
     assert.equal(await ota.locator('input').count(),0,'no private credential configuration')
     assert.equal(await page.getByRole('button',{name:'导出备份',exact:true}).count(),0)
-    assert.match(await ota.innerText(),/待项目公开后接入/)
-    await page.screenshot({path:path.join(output,'maintenance-reserved.png'),fullPage:true})
+    assert.match(await ota.innerText(),/模拟环境不执行安装/)
+    await page.screenshot({path:path.join(output,'maintenance-updates.png'),fullPage:true})
     await ota.getByRole('button',{name:'查看备份中心',exact:true}).click()
     assert.equal(await page.getByRole('button',{name:'导出备份',exact:true}).count(),1)
-    assert.deepEqual(writes,['/api/v1/config/preview'],'reserved OTA must issue no write or credential requests')
+    assert.deepEqual(writes,['/api/v1/config/preview'],'simulated OTA must issue no write or credential requests')
     assert.deepEqual(errors,[])
     const report = {passed:true,real_network:false,hardware_access:false,animation,responsive,checks:[
       'two OBT and six EPL groups map all 24 logical slots','compact read-only status, statistics, VLAN and optics tabs',
@@ -228,7 +228,7 @@ const assert = require('node:assert/strict')
       'settings work with details collapsed','reduced-motion expand and same-port collapse',
       'new breakout children remain disabled','Atom temperature on overview and thermal pages',
       'fan pointer drag and bounded numeric coordinates','critical point stays full speed',
-      'mobile port and curve layout','OTA reserved until repository is public',
+      'mobile port and curve layout','simulator cannot install hardware updates',
       'no private credential or installation controls','unified configuration backup entry']}
     await fs.writeFile(path.join(output,'ui-report.json'),JSON.stringify(report,null,2)+'\n')
     console.log(JSON.stringify(report))

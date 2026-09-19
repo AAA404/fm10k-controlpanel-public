@@ -39,3 +39,7 @@ Original project code is licensed under Apache-2.0; see the root LICENSE and NOT
 `SOURCE_MANIFEST.json` records original import digests and separately supplied inputs. NetLab is derived from the Apache-2.0 project at https://github.com/netlab-switch/netlab-os. The driver source was imported through https://github.com/Sakana-bot/pe31625g24dira-switch-stack and retains its per-file GPL declarations; no general license is inferred for that upstream project's other files.
 
 Manufacturer platform configurations, proprietary IES headers/libraries and reference eye firmware are not distributed here. Their hashes identify compatible inputs and do not grant rights to those materials. Runtime Python and frontend dependencies retain the licenses declared by their respective upstream projects.
+
+## libyang in Release bundles
+
+Complete Release bundles contain the unmodified libyang v2.1.148 source archive from https://github.com/CESNET/libyang. Its upstream BSD-3-Clause license and copyright notices remain inside that archive. The dependency version and SHA-256 are pinned in `deploy/release-dependencies.json`. Installation builds it into an isolated prefix so it does not replace Debian's system libyang ABI.

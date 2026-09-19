@@ -15,6 +15,10 @@ elif command == "native-startup":
     from fm10k_controlpanel.native_guard import main
 elif command == "time-helper":
     from fm10k_controlpanel.time_helper import main
+elif command == "update-helper":
+    from fm10k_controlpanel.update_helper import main
+elif command == "update-worker":
+    from fm10k_controlpanel.update_helper import worker_main as main
 else:
-    raise SystemExit("supported commands: web, preflight, https, native-startup, time-helper")
+    raise SystemExit("supported commands: web, preflight, https, native-startup, time-helper, update-helper, update-worker")
 raise SystemExit(main())

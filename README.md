@@ -11,7 +11,21 @@
 - 温度、PWM / RPM、RX 光功率和受限的二维接收眼图采集。
 - 管理员账户、HTTPS 和受限的系统时间同步。
 
-默认启动模拟后端，模拟结果不表示真实报文转发或硬件验收。原生硬件控制需要匹配的板卡、驱动、专有 SDK 和单独提供的平台配置。FM10840 本机拥塞 ECN、RoCE over LAG、三层配置和在线升级未开放。端口标称速率不是实测吞吐承诺；每次部署应完成自己的功能和流量验收。
+单独安装 Web 包时默认启动模拟后端，模拟结果不表示真实报文转发或硬件验收。完整 Release 提供原生交换服务与 Web 面板的自动安装、GitHub 版本检查和带检查点的配套升级。原生硬件控制需要匹配的板卡、驱动、专有 SDK 和单独提供的平台配置。FM10840 本机拥塞 ECN、RoCE over LAG 和三层配置未开放。端口标称速率不是实测吞吐承诺；每次部署应完成自己的功能和流量验收。
+
+## Release 安装
+
+从 [GitHub Releases](https://github.com/AAA404/fm10k-controlpanel-public/releases) 下载完整压缩包、配套 `.deb`、`release-manifest.json` 和 `SHA256SUMS`，核对摘要并解压。目标为全新的 Debian 13 amd64、6.12 系列内核、唯一的受支持板卡及独立管理网卡。SDK 与对应修订的平台文件需要本地提供。
+
+```sh
+sha256sum -c SHA256SUMS
+tar -xzf fm10k-controlpanel-0.2.0.tar.gz
+cd fm10k-controlpanel-0.2.0
+sudo ./install.sh check --sdk /path/to/ies --platform /path/to/licensed-platform.cfg \
+  --management-interface mgmt0 --management-ip 192.0.2.10
+```
+
+`check` 只读检查，不安装软件、不加载驱动、不启动交换服务。检查通过并安排好目标机器的安装后，将 `check` 改为 `install` 执行完整安装。初始数据口全部关闭，管理员密码随机生成并保存在设备上的 root 专属文件中。详细条件和恢复方式见[安装说明](docs/INSTALL.md)。
 
 ## 本地启动
 
@@ -41,6 +55,7 @@ bash scripts/verify_debian.sh
 
 - [构建与外部输入](docs/BUILD.md)
 - [安装、HTTPS、升级和恢复](docs/DEPLOYMENT.md)
+- [Release 自动安装](docs/INSTALL.md)
 - [功能范围](docs/CAPABILITY_MATRIX.md)
 - [原生控制面与板级映射](docs/NATIVE_INTEGRATION.md)
 - [光模块与眼图](docs/OPTICS.md)
@@ -48,7 +63,7 @@ bash scripts/verify_debian.sh
 - [PFC watchdog](docs/PFC-WATCHDOG.md) · [软件 ECN 实验](docs/ECN-MARKING.md)
 - [系统时间](docs/TIME_SYNC.md) · [确认窗口与协议计时](docs/NATIVE_TIMERS.md)
 - [硬件验收方法](docs/HARDWARE_ACCEPTANCE.md) · [更新说明](docs/RELEASE_NOTES.md)
-- [OTA 状态](docs/OTA.md)
+- [GitHub 在线升级](docs/OTA.md)
 
 ## 源码结构与许可
 

@@ -1,0 +1,21 @@
+[Unit]
+Description=FM10840 checkpointed native and Web release updater
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/usr/bin/python3 -I /usr/lib/fm10k-controlpanel/entry.py update-worker
+TimeoutStartSec=infinity
+TimeoutStopSec=180
+UMask=0077
+PrivateTmp=yes
+ProtectHome=yes
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PANEL_NETLAB_ROOT=/usr/lib/fm10k-controlpanel/netlab
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

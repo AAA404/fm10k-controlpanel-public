@@ -1,0 +1,68 @@
+name: Build reviewed Release
+
+on:
+  push:
+    tags: ['v[0-9]*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    uses: ./.github/workflows/verify.yml
+
+  release:
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require an exact version tag on the reviewed commit
+        shell: bash
+        run: |
+          version=$(cat VERSION)
+          test "$GITHUB_REF_TYPE" = tag
+          test "$GITHUB_REF_NAME" = "v$version"
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "$GITHUB_REF_NAME^{commit}")"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Build versioned public artifacts
+        run: |
+          npm --prefix frontend ci --no-audit --no-fund
+          npm --prefix frontend run build
+          python3 -B scripts/build_release.py
+          python3 -B scripts/verify_release.py --release-dir artifacts/release
+      - name: Verify the exact release package inside Debian 13 without hardware or network
+        run: |
+          docker build --platform linux/amd64 -f deploy/Dockerfile.debian13 -t fm10k-release-test .
+          docker run --rm --network none --platform linux/amd64 \
+            --mount "type=bind,source=$PWD,target=/src,readonly" \
+            fm10k-release-test python3 -B /src/scripts/verify_release.py --release-dir /src/artifacts/release --install-test
+      - name: Create or refresh a draft release for review
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          version=$(cat VERSION)
+          tag="v$version"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            test "$(gh release view "$tag" --json isDraft --jq .isDraft)" = true
+            gh release upload "$tag" artifacts/release/*.deb artifacts/release/*.tar.gz \
+              artifacts/release/release-manifest.json artifacts/release/SHA256SUMS --clobber
+          else
+            gh release create "$tag" --verify-tag --draft --title "FM10K Control Panel $version" \
+              --notes-file docs/RELEASE_NOTES.md artifacts/release/*.deb artifacts/release/*.tar.gz \
+              artifacts/release/release-manifest.json artifacts/release/SHA256SUMS
+          fi

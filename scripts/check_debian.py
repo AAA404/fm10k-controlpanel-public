@@ -83,7 +83,8 @@ def main():
                                          f"NETLAB_SDK_DIR={work / 'hardware/sdk/ies'}"]):
                 run("sdk-link-check", ["python3", "scripts/check_sdk.py", "--sdk", str(work / "hardware/sdk/ies"),
                                        "--executable", str(work / "vendor/netlab/build/switchd")])
-    package = str(results / "fm10k-controlpanel_0.1.0~dev1_all.deb")
+    version = (work / "VERSION").read_text().strip()
+    package = str(results / f"fm10k-controlpanel_{version}_all.deb")
     if run("package-build", ["python3", "scripts/build_deb.py", "--output", package]):
         run("package-public-content", ["python3", "scripts/check_public.py", "--package", package], critical=True)
         run("package-inspect", ["dpkg-deb", "--info", package])
@@ -91,7 +92,9 @@ def main():
         if run("package-install", ["apt-get", "install", "-y", package]):
             run("installed-runtime", ["python3", "-I", "scripts/installed_smoke.py"])
             run("https-config", ["python3", "scripts/check_nginx.py"])
-            run("systemd-units", ["systemd-analyze", "verify", "/usr/lib/systemd/system/fm10k-panel.service"])
+            run("systemd-units", ["systemd-analyze", "verify", "/usr/lib/systemd/system/fm10k-panel.service",
+                                  "/usr/lib/systemd/system/fm10k-update.socket", "/usr/lib/systemd/system/fm10k-update@.service",
+                                  "/usr/lib/systemd/system/fm10k-update-worker.service"])
     report["completed_at"] = time.time()
     report["passed"] = all(check["exit_code"] == 0 for check in report["checks"])
     (results / "debian13-report.json").write_text(json.dumps(report, indent=2) + "\n")

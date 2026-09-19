@@ -156,6 +156,8 @@ def inspect_sdk(sdk: Path, manifest_path: Path) -> dict:
     for entry in manifest["libraries"]:
         path = sdk / "build" / Path(entry["suffix"]).name
         try:
+            if path.is_symlink():
+                raise OSError("SDK libraries must not be symbolic links")
             raw = path.read_bytes()
             digest = hashlib.sha256(raw).hexdigest()
             elf_ok = len(raw) >= 20 and raw[:6] == b"\x7fELF\x02\x01" and struct.unpack_from("<H", raw, 18)[0] == 62

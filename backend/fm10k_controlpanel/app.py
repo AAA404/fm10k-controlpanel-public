@@ -24,13 +24,13 @@ from .eye import EyeRequest, export_csv
 from .simulator import MockConfigd
 from .http_limits import BodyLimit
 from .roce import capabilities as roce_capabilities, preflight as roce_preflight
-from .updates import status as update_status, UPDATE_MESSAGE
+from .updates import UpdateClient, UpdateError
 from .time_sync import TimeSyncClient, TimeSyncError, TimeSyncRequest
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def create_app(*, state_dir: Path | None = None, backend=None, secure_cookie: bool | None = None) -> FastAPI:
+def create_app(*, state_dir: Path | None = None, backend=None, secure_cookie: bool | None = None, update_client=None) -> FastAPI:
     directory = state_dir or Path(os.environ.get("PANEL_STATE_DIR", ROOT / "local-state"))
     mode = os.environ.get("PANEL_BACKEND", "mock")
     if backend is None:
@@ -42,6 +42,7 @@ def create_app(*, state_dir: Path | None = None, backend=None, secure_cookie: bo
     service = PanelService(backend, directory)
     auth = Auth(directory)
     time_sync = TimeSyncClient(backend.mode, directory)
+    update_client = update_client or UpdateClient(backend.mode, __version__)
     secure = (backend.mode != "mock" or os.environ.get("PANEL_SECURE_COOKIE") == "1") if secure_cookie is None else secure_cookie
 
     @asynccontextmanager
@@ -54,6 +55,7 @@ def create_app(*, state_dir: Path | None = None, backend=None, secure_cookie: bo
                   docs_url=None, redoc_url=None, openapi_url=None)
     app.state.service, app.state.auth = service, auth
     app.state.time_sync = time_sync
+    app.state.updates = update_client
     app.add_middleware(BodyLimit)
 
     @app.middleware("http")
@@ -89,6 +91,10 @@ def create_app(*, state_dir: Path | None = None, backend=None, secure_cookie: bo
     async def time_sync_error(request, error):
         return JSONResponse({"detail": str(error), "code": "time_sync_error"}, status_code=503)
 
+    @app.exception_handler(UpdateError)
+    async def update_error(request, error):
+        return JSONResponse({"detail": str(error), "code": "update_error"}, status_code=error.status)
+
     @app.exception_handler(ValidationError)
     @app.exception_handler(RequestValidationError)
     async def validation_error(request, error):
@@ -102,6 +108,9 @@ def create_app(*, state_dir: Path | None = None, backend=None, secure_cookie: bo
     def writable(request: Request, user=Depends(session)):
         if not hmac.compare_digest(request.headers.get("x-csrf-token", ""), user["csrf"]):
             raise HTTPException(403, "CSRF 校验失败")
+        if (update_client.maintenance() and not request.url.path.startswith("/api/v1/updates/")
+                and request.url.path != "/api/v1/auth/logout"):
+            raise HTTPException(423, "设备正在更新或恢复，配置写入暂时锁定。")
         return user
 
     def login_response(token, value):
@@ -295,12 +304,27 @@ def create_app(*, state_dir: Path | None = None, backend=None, secure_cookie: bo
 
     @app.get("/api/v1/updates")
     def updates(user=Depends(session)):
-        return update_status(__version__)
+        return update_client.request("status")
 
     @app.post("/api/v1/updates/check")
-    @app.post("/api/v1/updates/install")
-    def deferred_update(body: dict, user=Depends(writable)):
-        return JSONResponse({"detail":UPDATE_MESSAGE, "code":"update_not_enabled"}, status_code=501)
+    def check_updates(body: dict, user=Depends(writable)):
+        if body:
+            raise HTTPException(422, "检查版本不接受自定义下载源或凭据")
+        return update_client.request("check")
+
+    @app.post("/api/v1/updates/install", status_code=202)
+    def install_update(body: dict, user=Depends(writable)):
+        if set(body) != {"version", "manifest_sha256", "confirm_restart"} or body["confirm_restart"] is not True:
+            raise HTTPException(422, "需要确认已检查版本和维护中断")
+        configuration = service.config()
+        with service.lock:
+            if service.busy_job or configuration.get("pending") or any(
+                    job["state"] in {"queued", "running", "awaiting_confirmation"} for job in service.jobs.values()):
+                raise PanelError("请先完成正在进行的配置、诊断或确认操作")
+            result = update_client.request("install", body)
+            service.audit("release_update_requested", actor=user["username"], version=body["version"],
+                          manifest_sha256=body["manifest_sha256"])
+            return result
 
     @app.get("/api/v1/logs")
     def logs(user=Depends(session)):

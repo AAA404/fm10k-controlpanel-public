@@ -74,7 +74,7 @@ def build(root: Path, output: Path, version: str, epoch: int):
             add(source.relative_to(root), "usr/share/fm10k-controlpanel/web/" + str(source.relative_to(root / "frontend/dist")))
     add("deploy/entry.py", "usr/lib/fm10k-controlpanel/entry.py")
     add("deploy/systemd/fm10k-panel.service", "usr/lib/systemd/system/fm10k-panel.service")
-    for unit in ("fm10k-time.socket", "fm10k-time@.service"):
+    for unit in ("fm10k-time.socket", "fm10k-time@.service", "fm10k-update.socket", "fm10k-update@.service", "fm10k-update-worker.service"):
         add("deploy/systemd/" + unit, "usr/lib/systemd/system/" + unit)
     add("deploy/panel.env", "etc/fm10k-controlpanel/panel.env")
     add("deploy/nginx/fm10k-controlpanel.conf.in", "usr/share/fm10k-controlpanel/nginx.conf.in")
@@ -122,7 +122,7 @@ Description: FM10840 Debian 13 Web management and simulator
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--version", default="0.1.0~dev1")
+    parser.add_argument("--version", default=(ROOT / "VERSION").read_text().strip())
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     output = args.output or ROOT / "artifacts" / f"fm10k-controlpanel_{args.version}_all.deb"

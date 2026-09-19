@@ -64,7 +64,23 @@ SDK 存放在被忽略的 `hardware/sdk/`，不得混用其他版本的头文件
 
 ```sh
 python3 scripts/check_public.py --history
-python3 scripts/check_public.py --package artifacts/debian13/fm10k-controlpanel_0.1.0~dev1_all.deb
+python3 scripts/check_public.py --package artifacts/debian13/fm10k-controlpanel_0.2.0_all.deb
 ```
 
 打包文档白名单位于 `deploy/public-documents.json`。检查覆盖 Git 文件、可达历史和安装包内容；可以额外提供本地 `--private-markers <JSON文件>`，其内容为不应外发的字符串数组。该文件及检查产物应保存在忽略目录中。
+
+## 完整 Release
+
+将 `VERSION`、Python 包版本与前端包版本统一更新为稳定的 `MAJOR.MINOR.PATCH`，完成检查并提交源码，再构建：
+
+```sh
+npm --prefix frontend run build
+python3 -B scripts/build_release.py
+python3 -B scripts/verify_release.py --release-dir artifacts/release
+```
+
+构建器只打包 Git 公共文件清单、配套 Web `.deb` 与经过固定摘要校验的 libyang 源码；不会递归复制工作区。`--libyang-archive` 可以提供预先下载的匹配源码包。版本、OS/驱动/接口要求、源码提交与两个制品摘要写入 `release-manifest.json`，压缩包内部还包含逐文件清单。`--allow-dirty` 仅用于本地预览，会用全零源码提交标识；正式发布必须来自干净提交。
+
+可在上述 Debian 镜像的一次性容器中，以 `--network none` 和只读挂载提供源码、Release 及本地 SDK/平台输入，运行 `scripts/verify_release.py --release-dir <制品目录> --native-build-test --sdk <SDK目录> --platform <平台文件> --profile <Profile>`。该检查调用安装器实际使用的原生构建与动态链接校验，编译产物仅保留在容器内，不加载驱动或启动服务。`--install-test` 则只在容器中安装 Web 包并验证接口与 systemd 单元。两项均禁止映射 UIO/I²C 设备；含私有输入的结果不能上传到公共 CI。
+
+`.github/workflows/release.yml` 在版本标签上先执行公共内容、Debian 和浏览器检查，再构建并在无网络、无设备映射的 Debian 容器中安装核对最终包。通过后创建 GitHub **草稿 Release**，保留审核步骤。发布者审核并发布草稿后，设备才能发现该稳定版本。工作流不改变仓库可见性，也不访问实板。

@@ -5,4 +5,4 @@ try:
 except ModuleNotFoundError as error:
     if error.name != __name__ + "._package_version":
         raise
-    __version__ = "0.1.0"
+    __version__ = "0.2.0"

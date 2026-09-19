@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 # libyang 2.x is isolated from Debian 13's system libyang ABI.
 RUN curl -fsSL https://github.com/CESNET/libyang/archive/refs/tags/v2.1.148.tar.gz -o /tmp/libyang.tar.gz \
+    && echo '77a0aaaeb3df720aeb70d6896e32e2c2be099d48df73e3cfb52567051af3e44b  /tmp/libyang.tar.gz' | sha256sum -c - \
     && mkdir /tmp/libyang && tar -xzf /tmp/libyang.tar.gz -C /tmp/libyang --strip-components=1 \
     && cmake -S /tmp/libyang -B /tmp/libyang-build -DCMAKE_BUILD_TYPE=Release \
        -DCMAKE_INSTALL_PREFIX=/opt/netlab-deps/libyang2 -DCMAKE_INSTALL_LIBDIR=lib \
@@ -19,6 +20,6 @@ ENV PKG_CONFIG_PATH=/opt/netlab-deps/libyang2/lib/pkgconfig
 ENV LD_LIBRARY_PATH=/opt/netlab-deps/libyang2/lib
 # The public CLI namespace fixtures import the original CLI runtime.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3-prompt-toolkit python3-requests && rm -rf /var/lib/apt/lists/*
+    python3-prompt-toolkit python3-requests adduser init-system-helpers && rm -rf /var/lib/apt/lists/*
 WORKDIR /src
 CMD ["/bin/bash"]

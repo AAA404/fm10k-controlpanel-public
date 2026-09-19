@@ -1,13 +1,13 @@
 # Debian 13 部署与恢复
 
-目标系统为 Debian 13 amd64。Web 包与原生交换程序分开交付；Web 包安装后默认使用模拟模式并监听回环地址。
+目标系统为 Debian 13 amd64。新安装请使用[完整 Release 自动安装器](INSTALL.md)，后续更新使用[GitHub 升级](OTA.md)。单独安装 Web 包仍默认使用模拟模式并监听回环地址。本文保留手工部署与旧安装迁移的说明。
 
 ## Web 包与 HTTPS
 
 从源码构建前端和安装包，然后在目标 Debian 系统安装：
 
 ```sh
-python3 scripts/build_deb.py --output artifacts/fm10k-controlpanel.deb --version 0.1.0~dev1
+python3 scripts/build_deb.py --output artifacts/fm10k-controlpanel.deb
 sudo apt install ./artifacts/fm10k-controlpanel.deb
 ```
 
