@@ -8,15 +8,15 @@ const assert = require('node:assert/strict')
 ;(async () => {
   const root = path.resolve(__dirname, '..'), output = path.join(root, 'artifacts/ui-controls')
   const seed = spawnSync(process.env.FM10K_PYTHON || 'python3', ['-c',
-    'from fm10k_controlpanel.models import SwitchConfiguration; print(SwitchConfiguration().model_dump_json())'],
+    'import json; from fm10k_controlpanel import __version__; from fm10k_controlpanel.models import SwitchConfiguration; from fm10k_controlpanel.updates import UpdateClient; print(json.dumps({"configuration": SwitchConfiguration().model_dump(mode="json"), "updates": UpdateClient("mock", __version__).request("status")}))'],
   { cwd: root, env: { ...process.env, PYTHONPATH: path.join(root, 'backend') }, encoding: 'utf8' })
   assert.equal(seed.status, 0, seed.stderr)
-  const configuration = JSON.parse(seed.stdout), errors = [], epls = [0,1,2,5,6,7]
+  const fixture = JSON.parse(seed.stdout), configuration = fixture.configuration, errors = [], epls = [0,1,2,5,6,7]
   const stamp = () => Date.now()/1000
   const base = 'http://127.0.0.1:18114'
   let previewRequest
   const writes = []
-  const updates = { enabled:false,state:'reserved',current_version:'0.1.0~rc3' }
+  const updates = fixture.updates
   const browser = await chromium.launch({ headless:true,
     ...(process.env.FM10K_BROWSER_CHANNEL ? { channel:process.env.FM10K_BROWSER_CHANNEL } : {}) })
   try {
@@ -30,10 +30,10 @@ const assert = require('node:assert/strict')
       const send = (body,status=200) => route.fulfill({status,contentType:'application/json',body:JSON.stringify(body)})
       switch (url.pathname) {
         case '/api/v1/auth/session': return send({initialized:true,authenticated:true,username:'fixture',csrf:'fixture',mode:'mock'})
-        case '/api/v1/capabilities': return send({mode:'mock',version:'0.1.0~rc3',profile:configuration.profile})
+        case '/api/v1/capabilities': return send({mode:'mock',version:updates.current_version,profile:configuration.profile})
         case '/api/v1/config': return send({configuration,revision:7,pending:null})
         case '/api/v1/updates': return send(updates)
-        case '/api/v1/system': return send({version:'0.1.0~rc3',backend:'mock'})
+        case '/api/v1/system': return send({version:updates.current_version,backend:'mock'})
         case '/api/v1/system/time': return send({available:true,provider:'simulator',state:'simulated',enabled:false,synchronized:false,
           server_time:stamp(),timezone:'UTC',servers:[],selected_server:null,server_address:null,last_synchronized_at:null,message:'模拟时间状态'})
         case '/api/v1/telemetry':
