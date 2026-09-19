@@ -51,8 +51,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Debian 13 amd64 public build, contracts, driver and package
         run: bash scripts/verify_debian.sh
-      - name: Save SDK-free package and verification evidence
-        if: always()
+      - name: Save validated SDK-free package and verification evidence
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: debian13-public-validation
