@@ -1,0 +1,34 @@
+[Unit]
+Description=FM10840 Web management API
+After=network.target
+
+[Service]
+Type=simple
+User=fm10k-web
+Group=fm10k-web
+SupplementaryGroups=netlab-ipc
+EnvironmentFile=/etc/fm10k-controlpanel/panel.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 -I /usr/lib/fm10k-controlpanel/entry.py web --host 127.0.0.1 --port 8080
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=15
+StateDirectory=fm10k-controlpanel
+StateDirectoryMode=0750
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/fm10k-controlpanel
+
+[Install]
+WantedBy=multi-user.target

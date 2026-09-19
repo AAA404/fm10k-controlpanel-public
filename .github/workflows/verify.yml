@@ -1,0 +1,150 @@
+name: Verify control panel
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  public-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check publication content and complete source history
+        run: python3 -B scripts/check_public.py --history
+      - name: Check the vendored public surface
+        run: python3 -B vendor/netlab/scripts/check-public-surface.py
+
+  ecn-software:
+    needs: public-source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify real Linux RED marking in isolated network namespaces
+        run: sudo python3 scripts/verify_ecn_marking.py run --evidence artifacts/ecn-software
+      - name: Save software ECN packet evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: software-ecn-validation
+          path: artifacts/ecn-software/
+          retention-days: 14
+          if-no-files-found: error
+
+  debian13:
+    needs: public-source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Debian 13 amd64 public build, contracts, driver and package
+        run: bash scripts/verify_debian.sh
+      - name: Save SDK-free package and verification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: debian13-public-validation
+          path: artifacts/debian13/
+          retention-days: 14
+          if-no-files-found: error
+
+  browser:
+    needs: public-source
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies and build UI
+        run: |
+          python -m pip install -r requirements-dev.lock
+          python -m pip install -e . --no-deps
+          npm --prefix frontend ci --no-audit --no-fund
+          npm --prefix frontend run build
+          npm --prefix frontend exec -- playwright install --with-deps chromium
+      - name: Browser transactions and responsive layout
+        env:
+          FM10K_PYTHON: python
+        run: node scripts/ui_smoke.cjs
+      - name: VLAN deletion dependencies and draft preservation
+        env:
+          FM10K_PYTHON: python
+        run: node scripts/ui_vlan_delete.cjs
+      - name: Configuration request feedback and delayed replies
+        env:
+          FM10K_PYTHON: python
+        run: node scripts/ui_config_feedback.cjs
+      - name: Collapsed transactions and notification timeouts
+        env:
+          FM10K_PYTHON: python
+        run: node scripts/ui_transaction_lifecycle.cjs
+      - name: EPL layout, fan curve, Atom and OTA controls
+        env:
+          FM10K_PYTHON: python
+        run: node scripts/ui_controls.cjs
+      - name: Account changes preserve the replacement session during polling
+        env:
+          FM10K_PYTHON: python
+        run: node scripts/ui_account_race.cjs
+      - name: Compact port details and inline speed drafts
+        env:
+          FM10K_PYTHON: python
+        run: |
+          node scripts/test_port_telemetry.cjs
+          node scripts/ui_port_details.cjs
+      - name: EPL VLAN merge and persistent split restoration
+        env:
+          FM10K_PYTHON: python
+        run: |
+          node scripts/test_port_modes.cjs
+          node scripts/ui_port_vlan_modes.cjs
+      - name: Optical diagnostics, capability limits and delayed replies
+        env:
+          FM10K_PYTHON: python
+        run: node scripts/ui_port_optics.cjs
+      - name: RDMA classification, DCBX drafts and operational freshness
+        env:
+          FM10K_PYTHON: python
+        run: node scripts/ui_roce.cjs
+      - name: Time synchronization polling and concurrent saves
+        env:
+          FM10K_PYTHON: python
+        run: node scripts/ui_time.cjs
+      - name: Save simulated UI screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: simulated-browser-validation
+          path: |
+            artifacts/dashboard-*.png
+            artifacts/vlan-delete/ui-report.json
+            artifacts/vlan-delete/vlan-references.png
+            artifacts/config-feedback/
+            artifacts/transaction-lifecycle/
+            artifacts/ui-controls/
+            artifacts/port-details/
+            artifacts/port-optics/
+            artifacts/port-vlan-modes/
+            artifacts/account-race/
+            artifacts/roce-ui/
+            artifacts/time-ui/
+          retention-days: 14

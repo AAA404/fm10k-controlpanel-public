@@ -1,0 +1,12 @@
+NetLab OS
+Copyright 2026 NetLab OS contributors
+
+This product is licensed under the Apache License, Version 2.0.
+
+This repository does not contain or license the Intel FM10000 SDK. Intel,
+FM10000 and related marks are trademarks of their respective owners. NetLab OS
+is an independent project and is not affiliated with or endorsed by Intel.
+
+Python runtime dependencies are distributed separately by their upstream
+projects under the licenses declared in their package metadata. No dependency
+wheel or binary is vendored in this source repository.

@@ -1,0 +1,15 @@
+[Unit]
+Description=FM10840 restricted time management socket
+
+[Socket]
+ListenStream=/run/fm10k-time/control.sock
+SocketUser=root
+SocketGroup=fm10k-web
+SocketMode=0660
+DirectoryMode=0755
+Accept=yes
+MaxConnections=8
+RemoveOnStop=yes
+
+[Install]
+WantedBy=sockets.target

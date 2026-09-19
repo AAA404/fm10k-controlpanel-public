@@ -1,0 +1,15 @@
+# NetLab daemons inherit append-only stdout/stderr descriptors from the stack
+# launcher. copytruncate bounds retention without requiring an unsafe restart or
+# a daemon-specific reopen signal.
+/var/log/netlab/*.log {
+    daily
+    rotate 14
+    maxage 30
+    maxsize 32M
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+    su root root
+}

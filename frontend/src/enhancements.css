@@ -1,0 +1,357 @@
+fieldset{border:0;margin:0;padding:0;min-width:0}
+.metrics-grid{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.port-view-heading{margin-bottom:0}
+.obt-port-section{border:1px solid #dce6ec;border-radius:12px;padding:18px;background:#f3f7f9}
+.obt-section-heading{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:16px}
+.obt-section-heading>div{display:flex;align-items:center;gap:10px;color:var(--accent)}
+.obt-section-heading h2{font-size:17px;color:#344f60}.obt-section-heading h2 span{color:#8597a3;font-weight:400;font-size:12px;margin-left:7px}
+.obt-section-heading>span{font-size:10px;color:#92a2ad}
+.epl-box-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.epl-box{display:flex;flex-direction:column;padding:16px;min-width:0;height:376px;overflow:hidden;container-type:inline-size;scroll-margin-block:20px 92px;border:1.5px solid #ccdae4;transition:border-color .2s,box-shadow .2s}
+.epl-box.expanded{border-color:#68a5aa;box-shadow:0 5px 28px #2159640b}
+.epl-box-heading{display:flex;align-items:center;flex-shrink:0;gap:8px;margin-bottom:14px}.epl-box-heading>div{display:flex;gap:8px;align-items:center;margin-right:auto;min-width:0}
+.port-settings-trigger{padding:7px 8px;border:1px solid #dbe7eb;border-radius:5px;background:#f6fafb;color:#407d80;font-size:11px;gap:5px;flex-shrink:0}
+.epl-label-chip{font:600 11px ui-monospace,monospace;letter-spacing:.4px;padding:5px 8px;background:#eaf1f5;border-radius:4px;color:#47687d}
+.epl-box-heading small{font-size:9px;color:#90a2af}
+.port-tile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;flex:1 1 auto;min-height:0}
+.expanded>.port-tile-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;flex:0 0 auto}
+.expanded>.epl-box-heading{margin-bottom:8px;gap:6px}
+.expanded>.epl-box-heading small{display:none}
+.expanded .epl-label-chip{white-space:nowrap}
+.expanded .port-tile{min-height:48px}
+.expanded .port-tile-toggle,.expanded .port-tile.selected>.port-tile-toggle{min-height:0;padding:5px 6px;gap:2px;line-height:1.2;justify-content:center}
+.expanded .port-tile-heading{gap:3px}.expanded .port-tile-heading strong{font-size:11px}
+.expanded .port-tile-speed{font-size:13px;margin-top:0}.expanded .port-tile.inactive .port-tile-speed{font-size:10px}
+.expanded .port-tile-state,.expanded .port-tile-name,.expanded .port-rate-note{display:none}
+.expanded .port-tile-rate.pending .port-tile-speed{color:#a17b3d}
+.expanded .port-rate-pending-marker{display:inline;font-size:9px;color:#a17b3d}
+@container(max-width:230px){
+  .expanded>.epl-box-heading>.tag{display:none}
+  .port-rate-inline .port-rate-label{display:none}
+  .port-summary-grid>div:not(.port-field-wide){flex-direction:column;align-items:flex-start;gap:1px}
+}
+@container(max-width:210px){
+  .expanded .port-tile-toggle,.expanded .port-tile.selected>.port-tile-toggle{padding-left:3px;padding-right:3px}
+  .expanded .port-tile-speed{font-size:12px}
+  .expanded .port-tile-rate{gap:2px}
+}
+.port-tile{position:relative;display:flex;flex-direction:column;align-items:stretch;text-align:left;padding:0;min-height:130px;background:#f8fafb;border:1px solid #dce5eb;border-radius:7px;color:#728793;min-width:0;overflow:hidden;transition:background .15s,border-color .15s,transform .15s}
+.port-tile:hover{background:#f0f6f8;border-color:#8db9bc;transform:translateY(-1px)}
+.port-tile.online{background:#f1f8f4;border-color:#beded0}
+.port-tile.selected{background:#eaf6f4;border:2px solid var(--accent)}
+.port-tile.inactive{background:#f4f6f8;border-style:dashed}
+.port-tile.dim{opacity:.38}
+.port-tile-toggle{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;flex:1 0 auto;gap:5px;width:100%;min-width:0;min-height:128px;padding:10px 11px 36px;background:transparent;color:inherit;text-align:left;white-space:normal;border-radius:6px}
+.port-tile.selected>.port-tile-toggle{min-height:126px;padding:9px 10px 35px}
+.port-tile-toggle:focus-visible{outline:2px solid #82c7bd;outline-offset:-4px}
+.port-rate-trigger{position:absolute;right:8px;bottom:7px;min-height:24px;padding:3px 8px;border:1px solid #d6e5e8;border-radius:4px;background:#fff;color:#407d80;font-size:10px}
+.port-tile.editing{background:#eef7f6;border-color:#88b5b3}
+.port-tile.editing>.port-tile-toggle{flex:0 0 auto;min-height:0;padding-bottom:5px}
+.port-rate-editor{padding:0 10px 9px;min-width:0}
+.port-rate-editor label{font-size:10px;gap:7px}
+.port-speed-field{position:relative;display:block;min-width:0}
+.port-speed-select{display:block;appearance:none;width:100%;height:29px;padding:3px 24px 3px 6px;border-color:#aac9c9;background:#fff;font-size:13px;font-weight:550;color:#416278;cursor:pointer}
+.port-speed-select:focus-visible{outline:2px solid #82c7bd;outline-offset:1px}
+.port-speed-chevron{position:absolute;right:7px;top:50%;transform:translateY(-50%);pointer-events:none;color:#416278}
+.port-rate-actions{display:flex;gap:5px;margin-top:7px}
+.port-rate-actions button{flex:1;min-width:0;min-height:27px;padding:3px 4px;border:1px solid #d6e5e8;border-radius:4px;background:#fff;color:#68858e;font-size:10px}
+.port-rate-actions .save{background:var(--accent);border-color:var(--accent);color:#fff}
+.port-rate-note{font-size:9px;line-height:1.5;color:#8599a5;overflow-wrap:anywhere}
+.port-rate-note.pending{color:#a17b3d}
+.port-tile-heading{display:flex;align-items:center;justify-content:space-between;font-size:12px;gap:10px}
+.port-tile-heading strong{color:#395367;font:600 12px ui-monospace,monospace}
+.port-link-dot{width:6px;height:6px;border-radius:50%;background:#abb9c5;flex-shrink:0}
+.port-link-dot.up{background:#36a174;box-shadow:0 0 0 3px #4daf8120}
+.port-link-dot.stale{background:#c59b4b;box-shadow:none}
+.port-tile-rate{display:flex;align-items:baseline;gap:3px;min-width:0}
+.port-rate-pending-marker{display:none}
+.port-tile-speed{font-size:17px;font-weight:600;color:#416278;margin-top:3px}
+.port-tile.inactive .port-tile-speed{font-size:12px;color:#a0afba}
+.port-tile-state{font-size:9px;color:#869aa8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.port-tile-name{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#78929d}
+.expanded-port-detail{display:flex;flex-direction:column;flex:1 1 0;min-height:0;overflow:hidden;margin-top:7px;padding-top:7px;border-top:1px solid #dce9ec}
+.port-detail-heading{display:flex;align-items:center;flex-shrink:0;flex-wrap:wrap;gap:6px;min-height:28px;margin-bottom:6px}
+.port-detail-heading h2{font-size:13px;margin:0;flex-shrink:0}.port-detail-heading .tag{font-size:9px;padding:3px 5px}
+.port-detail-rate-trigger{min-height:26px;padding:3px 7px;border:1px solid #d6e5e8;border-radius:4px;background:#fff;color:#407d80;font-size:10px}
+.port-freshness{gap:4px;min-height:24px;margin-left:auto;padding:3px 5px;border-radius:4px;background:#f1f5f7;color:#6c8794;font-size:9px}
+.port-freshness.warning{background:#fff4df;color:#936c2d}.port-freshness[aria-expanded=true]{box-shadow:inset 0 0 0 1px #b8cdd3}
+.port-detail-heading.editing-rate{flex-wrap:nowrap}
+.port-rate-inline{display:flex;flex:1;align-items:center;justify-content:flex-end;gap:6px;padding:0;min-width:0}
+.port-rate-inline label{flex:0 0 auto;flex-direction:row;align-items:center;gap:6px}
+.port-rate-inline .port-speed-field{flex:0 0 80px;width:80px}
+.port-rate-inline .port-speed-select{height:28px}
+.port-rate-inline .port-rate-actions{margin:0;gap:4px;flex-shrink:0}
+.port-rate-inline .port-rate-actions button{min-height:28px;padding:3px 6px}
+.port-sample-help{margin-bottom:8px;padding:7px 8px;border:1px solid #e8dcc5;border-radius:5px;background:#fffaf0;color:#876c3e;font-size:10px;line-height:1.6}
+.port-sample-help small{display:block;margin-top:4px;font-size:10px;color:#8b806c}
+.port-detail-tabs{display:flex;flex-shrink:0;gap:3px;border-bottom:1px solid #dfe9ee;margin-bottom:6px}
+.port-detail-tabs button{flex:1;min-width:0;padding:5px 2px;font-size:10px;color:#8698a4;background:transparent;border-bottom:2px solid transparent;white-space:nowrap}
+.port-detail-tabs button[aria-selected=true]{color:var(--accent);border-bottom-color:var(--accent);background:#f0f8f6}
+.port-detail-body{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:2px 4px 4px 2px}
+.port-runtime-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;background:#f6f9fb;border:1px solid #e4ecf0;padding:8px;border-radius:6px}
+.port-runtime-grid>div{min-width:0}.port-runtime-grid span{display:block;color:#8296a3;font-size:10px;margin-bottom:2px}
+.port-runtime-grid strong{display:block;font-size:11px;font-weight:550;line-height:1.5;overflow-wrap:anywhere;color:#496578}
+.port-runtime-grid strong small{display:block;color:#90a3b0;font-size:10px}
+.port-runtime-grid.port-summary-grid{gap:4px 10px;padding:6px 8px}
+.port-summary-grid>div{display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.port-summary-grid span{margin:0;flex-shrink:0;line-height:1.45}
+.port-summary-grid strong{min-width:0;line-height:1.45;text-align:right}
+.port-summary-grid .port-field-wide{grid-column:1/-1}
+.port-summary-grid .port-field-wide:nth-child(5){padding-top:5px;border-top:1px solid #e4ecf0}
+.port-current-link.online{color:#328963}.port-current-link.historical{color:#98713b}
+.port-detail-section{padding-top:20px;margin-top:20px;border-top:1px solid #e7eef1}
+.port-detail-section h3{display:flex;align-items:center;gap:7px;margin-bottom:16px;font-size:13px}
+.port-stat-table{table-layout:fixed;border:1px solid #e4ecf0}
+.port-stat-table th,.port-stat-table td{padding:5px 7px;overflow-wrap:anywhere}
+.port-stat-table thead th:first-child{width:25%}
+.port-stat-table thead th:not(:first-child),.port-stat-table td{text-align:right}
+.port-stat-table tbody th{font-size:11px;color:#7a919f;background:#fafcfd}
+.port-stat-table td{font-variant-numeric:tabular-nums;color:#496578}
+.port-crc-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 9px;border:1px solid #e4ecf0;border-top:0;background:#f6f9fb;font-size:10px;color:#7a919f}
+.port-crc-summary strong{font-weight:550;color:#496578}
+.port-runtime-grid.port-vlan-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.port-vlan-memberships{display:grid;gap:4px;list-style:none;margin:0;padding:0;font-size:11px;font-weight:550;line-height:1.5;color:#496578;overflow-wrap:anywhere}
+.port-optics{font-size:10px;color:#526e7f;min-width:0}
+.optics-channel-heading,.optics-section-heading{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:4px;flex-wrap:wrap}
+.optics-channel-heading>strong{font-size:11px}.optics-lane-selector{display:flex;gap:3px}
+.optics-lane-selector button{min-width:26px;min-height:24px;padding:3px 5px;border:1px solid #dce6eb;border-radius:4px;font-size:10px;background:#f5f8fa;color:#718b99}
+.optics-lane-selector button[aria-pressed=true]{border-color:#79b5af;color:var(--accent);background:#eaf6f3}
+.optics-power-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#f5f8fa;border:1px solid #e1e9ee;border-radius:5px;padding:4px 6px}
+.optics-power-grid>div{display:flex;justify-content:space-between;gap:4px;align-items:baseline;flex-wrap:wrap}
+.optics-power-grid span{font-size:9px;color:#718794}.optics-power-grid strong{font-size:10px;color:#8294a0}
+.optics-capability-summary,.optics-note,.optics-state-note{font-size:10px;line-height:1.6;overflow-wrap:anywhere}
+.optics-capability-summary{margin:3px 0 5px;color:#8a7a59}.optics-note{margin-top:6px;color:#889ca7}
+.optics-state-note{margin-bottom:6px;color:#997038}
+.port-optics h3{font-size:11px;margin:0}.optics-section-heading .tag{font-size:9px;padding:3px 5px}
+.optics-values{display:grid;gap:3px;margin:0;padding:0}.optics-values>div{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.optics-values dt{color:#8295a2;min-width:0}.optics-values dd{margin:0;min-width:0;text-align:right;overflow-wrap:anywhere;line-height:1.5}
+.optics-pcs,.optics-missing-metrics{border-top:1px solid #e3ebef;margin-top:8px;padding-top:8px}.optics-pcs h3{margin-bottom:6px}
+.optics-missing-metrics dd{color:#899aa5}
+.optics-more{border-top:1px solid #e3ebef;margin-top:8px;padding-top:7px}.optics-more summary{cursor:pointer;color:#5d7e8c;font-size:10px;line-height:1.7}
+.optics-more[open] summary{margin-bottom:7px}
+.port-empty-associations{margin-top:8px;font-size:11px;line-height:1.6;color:#8196a3}
+.port-detail-body .footnote{margin-top:8px;line-height:1.6}
+.port-detail-body .port-associations{margin:0;line-height:1.7;padding-left:16px}
+.port-detail-section .form-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.port-detail-section .inline-form label{min-width:105px;max-width:none}
+.port-associations{font-size:11px;color:#758d9e;line-height:2;padding-left:20px}
+.port-detail-body .port-detail-section{padding-top:8px;margin-top:8px}.port-detail-body .port-detail-section h3{margin-bottom:6px}
+.port-expand-enter-active,.port-expand-leave-active{transition:opacity .18s ease}
+.port-expand-enter-from,.port-expand-leave-to{opacity:0}
+.port-settings-modal{width:860px;padding:0;border:1px solid #dce6ec;color:inherit;overflow:hidden}
+.port-settings-modal:not([open]){display:none}
+.port-settings-modal::backdrop{background:#0c1e2b70;backdrop-filter:blur(2px)}
+.port-settings-modal>.card-heading,.port-settings-modal>.modal-actions{flex-shrink:0}
+.port-settings-modal h2{display:flex;align-items:center;gap:8px}
+.port-settings-modal .modal-scroll{min-height:0;overscroll-behavior:contain}
+.port-settings-modal .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.port-settings-modal .inline-form label:first-child{min-width:210px}
+.port-settings-selector{margin-top:18px;max-width:220px}
+.port-vlan-plan{margin-top:14px;padding:12px;border:1px solid #d5e5e6;border-radius:7px;background:#f4f9f8}
+.port-vlan-plan h4{font-size:12px;margin-bottom:8px}.port-vlan-plan p{font-size:11px;line-height:1.7}
+.port-vlan-plan table{margin-top:8px;table-layout:fixed}.port-vlan-plan th,.port-vlan-plan td{padding:7px;font-size:11px;overflow-wrap:anywhere}
+.port-vlan-plan th:first-child{width:52px}.port-vlan-plan .warning{color:#987139}
+.group-change-review{margin:16px 0}.group-change-review h3{font-size:13px;margin-bottom:10px}
+.group-change-review .port-vlan-plan{margin-top:9px}.group-change-review small{display:block;margin-top:3px;color:#8195a0}
+.fan-curve-editor{max-width:100%;overflow:hidden}
+.curve-tabs{display:flex;gap:9px;flex-wrap:wrap;margin:16px 0 3px}
+.curve-tabs button{display:flex;align-items:center;gap:8px;border:1px solid #e0e9ed;background:#f7fafb;color:#77929e;padding:9px 12px;font-size:11px}
+.curve-tabs button.active{border-color:#69a99c;color:#347e6a;background:#eef8f4}
+.curve-tabs b{font-size:10px;background:#e0eee9;border-radius:50%;width:19px;height:19px;display:inline-flex;align-items:center;justify-content:center}
+.curve-tabs span{font:10px ui-monospace,monospace;color:#879fa9}
+.curve-canvas{position:relative;width:100%;padding-bottom:16px;min-width:0}
+.curve-canvas svg{display:block;width:100%;height:auto;overflow:visible}
+.curve-canvas text{fill:#94a8b2;font-size:10px;font-family:inherit}
+.curve-canvas .curve-coordinate{fill:#4b8e79;font-size:10px}
+.curve-hit-target{fill:transparent;stroke:transparent;touch-action:none;cursor:grab}
+.curve-hit-target.selected{fill:#388f7010}
+.curve-hit-target:focus-visible{stroke:#367aa5;stroke-dasharray:3 3;outline:0}
+.curve-canvas.dragging .curve-hit-target{cursor:grabbing}
+.curve-handle{fill:#48a783;stroke:white;stroke-width:2.5;pointer-events:none}
+.curve-handle.selected{fill:#19876d;stroke-width:3}
+.curve-coordinate,.curve-point{pointer-events:none}
+.curve-guide{stroke:#bdd3ce;stroke-dasharray:3 4;stroke-width:1}
+.coordinate-editor{position:absolute;bottom:12px;width:190px;max-width:calc(100% - 15px);display:grid;grid-template-columns:1fr 1fr;gap:8px;background:#fff;border:1px solid #aacdbd;padding:10px 12px;border-radius:8px;box-shadow:0 6px 20px #325d4110}
+.coordinate-editor strong{grid-column:1/-1;font-size:10px;color:#568d79;font-weight:600}
+.coordinate-editor label{font-size:9px;margin:0;gap:5px}
+.coordinate-editor input{height:31px;padding:4px 7px;font-size:12px;min-width:0}
+.curve-feedback{font-size:11px;line-height:1.8;color:#718e91;background:#f1f7f7;padding:8px 12px;border-radius:5px;margin:14px 0}
+.curve-behaviour{border-top:1px solid #e7eef1;padding-top:21px;margin-top:23px}
+.job-banner>.job-banner-message{flex:1;min-width:0;overflow-wrap:anywhere}
+.job-banner>.job-banner-actions{display:flex;align-items:center;justify-content:flex-end;flex:0 1 auto;flex-wrap:wrap;gap:8px;min-width:0}
+.job-banner-actions .countdown{font-size:22px;margin:0 4px 0 0}
+.job-banner>.spin,.job-banner>svg{flex-shrink:0}
+@media(max-width:1100px){.job-banner{flex-wrap:wrap}.job-banner>.job-banner-actions{flex-basis:100%}}
+@media(max-width:600px){
+  .job-banner>.job-banner-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+  .job-banner-actions .countdown{grid-column:1;grid-row:1}
+  .job-banner.pending .job-details{grid-column:2;grid-row:1}
+  .job-banner-actions .job-close{grid-column:2;justify-self:end}
+  .job-banner-actions button:not(.icon-button){width:100%;padding:0 10px}
+}
+.transaction-content{display:flex;flex-direction:column;gap:20px;padding:24px;min-height:0;overflow:auto;overscroll-behavior:contain}
+.transaction-content>*{flex-shrink:0}
+.transaction-header{display:flex;align-items:flex-start;gap:14px}
+.transaction-icon{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border-radius:10px;background:#edf7f4}
+.transaction-heading{flex:1;min-width:0;overflow-wrap:anywhere}
+.transaction-heading p{margin-top:6px}
+.transaction-stages{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));list-style:none;gap:8px;padding:0;margin:0;counter-reset:phase}
+.transaction-stages li{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;min-height:56px;font-size:12px;line-height:1.5;color:#9caeb7;background:#f5f8fa;padding:12px 10px;border-radius:6px}
+.transaction-stages li span{white-space:nowrap}
+.transaction-stages li:before{counter-increment:phase;content:counter(phase);font-size:10px;display:inline-grid;place-items:center;flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:#e7edf0;color:#92a4af}
+.transaction-stages li.complete{color:#4f937c;background:#f0f9f4}
+.transaction-stages li.complete:before{content:"✓";background:#daf0e3;color:#39816c}
+.transaction-stages li.active{color:#317d7c;background:#eaf5f5}
+.transaction-footer{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;flex-shrink:0;padding:16px 24px;border-top:1px solid #e5ecef;background:#fafcfc}
+.transaction-meta{display:grid;gap:3px;min-width:0}
+.request-modal .transaction-meta p{font-size:11px;line-height:1.6}
+.request-modal .request-job{color:#8b9eaa}.request-job code{color:#708b99}
+.transaction-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;min-width:0}
+.request-modal .transaction-confirm-help{padding:11px 13px;border:1px solid #eee1c7;border-radius:6px;background:#fff9ed;color:#8e784f;font-size:12px;line-height:1.8}
+.transaction-confirm-help strong{color:#bf8b42}
+.transaction-content .alert{margin:0}
+.administrator-settings button.primary{margin-top:18px}
+.ota-version-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;border-bottom:1px solid #e7eef1;padding-bottom:20px;margin-bottom:20px}
+.ota-version-row>div{display:flex;flex-direction:column;gap:7px;min-width:0}
+.ota-version-row span{font-size:11px;color:#82959f}.ota-version-row strong{font-size:21px;color:#31535b}
+.ota-repository{display:flex;align-items:center;gap:8px;color:#527f83!important;overflow-wrap:anywhere}
+.ota-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-top:22px;border-top:1px solid #e7eef1;padding-top:14px;font-size:11px;color:#8aa0a8}
+@media(max-width:1100px){
+  .epl-box-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .port-detail-section .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .ota-version-row{grid-template-columns:1fr;gap:14px}
+  .port-view-heading{align-items:flex-start;gap:12px;flex-direction:column}.port-view-heading .search{max-width:none;width:100%}
+  .obt-port-section{padding:12px}
+  .epl-box-grid{grid-template-columns:1fr}
+  .obt-section-heading{align-items:flex-start;gap:8px}.obt-section-heading h2{font-size:15px}.obt-section-heading>span{font-size:9px;max-width:92px;text-align:right;line-height:1.6}
+  .epl-box{padding:13px}
+  .port-runtime-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 10px;padding:10px}
+  .port-detail-section .form-grid{grid-template-columns:1fr}
+  .port-settings-modal{max-width:calc(100% - 20px);max-height:calc(100dvh - 20px)}
+  .curve-canvas{padding-bottom:108px}
+  .curve-canvas text{font-size:22px}
+  .curve-canvas .curve-coordinate{display:none;font-size:20px}
+  .curve-canvas .curve-coordinate.selected{display:block}
+  .coordinate-editor{bottom:12px;width:178px;left:calc(50% - 89px)!important}
+  .curve-tabs{gap:6px}.curve-tabs button{font-size:10px;padding:7px 8px;gap:6px}
+  .curve-tabs span{font-size:9px}
+  .fan-curve-editor .card-heading{flex-wrap:wrap;gap:12px}
+}
+@media(max-width:600px){
+  .transaction-content{padding:18px;gap:16px}
+  .transaction-header{gap:12px}.transaction-icon{flex-basis:36px;width:36px;height:36px;border-radius:8px}
+  .transaction-header h2{font-size:18px}
+  .transaction-stages{gap:6px}.transaction-stages li{flex-direction:column;gap:6px;padding:10px 4px;font-size:11px}
+  .transaction-footer{grid-template-columns:1fr;gap:12px;padding:14px 18px}
+  .transaction-meta{display:flex;flex-wrap:wrap;justify-content:space-between;gap:4px 12px}
+  .transaction-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .transaction-actions .transaction-dismiss{grid-column:1/-1}
+  .transaction-actions button{width:100%;padding:0 10px}
+}
+@media(prefers-reduced-motion:reduce){
+  .port-tile,.epl-box,.port-expand-enter-active,.port-expand-leave-active{transition:none!important}
+}
+
+.eye-diagram{border-top:1px solid #e3ebef;margin-top:10px;padding-top:10px;min-width:0}
+.eye-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:9px 0}.eye-controls select{font-size:10px;min-width:130px;max-width:180px;height:30px;padding:4px 7px}.eye-controls .secondary{font-size:10px;height:30px;padding:4px 9px}
+.eye-progress,.eye-point{font-size:10px;line-height:1.6;color:#778d9a;margin:6px 0;overflow-wrap:anywhere}.eye-diagram progress{width:100%;height:5px;accent-color:#3ba69f;margin-bottom:7px}
+.eye-canvas{display:block;width:100%;height:auto;aspect-ratio:768/438;border:1px solid #283647;border-radius:5px;background:#101b2c}.eye-canvas:focus-visible{outline:2px solid #33aaa4;outline-offset:2px}
+.eye-downloads{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}.eye-downloads button{font-size:10px}
+.eye-dialog{width:min(950px,94vw);max-height:94vh;overflow:auto;margin:auto;padding:20px;border:1px solid #d6e3e9;border-radius:10px;background:#fff;color:#405866}.eye-dialog::backdrop{background:#0c1e2baa}.eye-dialog .optics-section-heading{margin-bottom:12px}
+
+/* Keep the EPL grid fixed while a single inspector moves to the dialog. */
+.port-inspector-host{display:flex;flex-direction:column;flex:1 1 0;min-height:0;min-width:0;overflow:hidden}
+.port-detail-expand{flex-shrink:0;width:25px;min-height:26px;padding:4px;border:1px solid #d6e5e8;border-radius:4px;background:#f0f8f6;color:var(--accent)}
+.port-inspector-placeholder{margin:auto;text-align:center;font-size:11px;color:#78929d}
+.port-inspector-dialog{position:fixed;inset:0;margin:auto;padding:20px 24px 10px;border:1px solid #d3e2e9;border-radius:10px;background:#fff;color:#405866;max-width:calc(100vw - 32px);max-height:calc(100dvh - 32px);overflow:hidden;box-sizing:border-box;box-shadow:0 18px 70px #0c1e2b38}
+.port-inspector-dialog:not([open]){display:none}
+.port-inspector-dialog[open]{display:flex;flex-direction:column}
+.port-inspector-dialog::backdrop{background:#0c1e2b70}
+.port-inspector-dialog-content{display:flex;flex:1;min-height:0;min-width:0}
+.expanded-port-detail.port-inspector-floating{margin:0;padding:0;border:0}
+.port-inspector-floating .port-detail-heading{gap:10px;margin-bottom:14px;min-height:40px}
+.port-inspector-floating .port-detail-heading h2{font-size:20px;line-height:1.4}
+.port-inspector-floating .port-detail-heading h2 small{display:block;font-size:12px;font-weight:400;color:#6b8594;margin-bottom:4px}
+.port-inspector-floating .port-detail-heading .tag{font-size:12px}
+.port-inspector-floating .port-detail-rate-trigger,.port-inspector-floating .port-freshness{font-size:12px;min-height:32px;padding:5px 9px}
+.port-inspector-floating .port-freshness{margin-left:0}
+.port-inspector-actions{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto;align-items:center}
+.port-inspector-actions button{gap:5px;min-height:34px;padding:6px 9px;font-size:12px;color:#407d80;background:#f6fafb;border:1px solid #d6e5e8;border-radius:5px;white-space:nowrap}
+.port-inspector-navigation{flex-shrink:0;margin-bottom:14px;min-width:0}
+.port-inspector-navigation label{display:flex;flex-direction:row;align-items:center;gap:10px;font-size:12px;white-space:nowrap}
+.port-inspector-navigation select{width:auto;height:34px;padding:5px 9px;font-size:13px;max-width:100%;min-width:0}
+.port-inspector-floating .port-detail-tabs{gap:6px;margin-bottom:10px}
+.port-inspector-floating .port-detail-tabs button{font-size:14px;padding:9px 10px}
+.port-inspector-floating .port-detail-body{container-type:inline-size;font-size:13px;line-height:1.65;padding:2px 8px 8px 0;scroll-padding-top:50px}
+.port-inspector-floating .port-runtime-grid{gap:16px 20px;padding:16px}
+.port-inspector-floating .port-runtime-grid span,.port-inspector-floating .port-runtime-grid strong,.port-inspector-floating .port-vlan-memberships{font-size:13px}
+.port-inspector-floating .port-runtime-grid strong small{font-size:12px;margin-top:4px}
+.port-inspector-floating .port-summary-grid>div{flex-direction:column;align-items:flex-start;gap:5px}
+.port-inspector-floating .port-summary-grid strong{text-align:left}
+.port-inspector-floating .port-summary-grid .port-field-wide:nth-child(5){padding-top:0;border-top:0}
+.port-inspector-floating .port-stat-table th,.port-inspector-floating .port-stat-table td{font-size:13px;padding:12px;line-height:1.6}
+.port-inspector-floating .port-crc-summary{font-size:13px;padding:12px}
+.port-inspector-floating .port-associations,.port-inspector-floating .port-empty-associations{font-size:13px}
+.port-inspector-floating .port-sample-help,.port-inspector-floating .port-sample-help small,.port-inspector-floating .footnote{font-size:12px;line-height:1.7}
+.port-inspector-floating .port-optics{font-size:13px}
+.optics-signal-column,.optics-eye-column{min-width:0}
+.port-inspector-floating .optics-channel-heading{position:sticky;top:0;z-index:1;min-height:40px;margin-bottom:12px;padding:4px 0 8px;background:#fff}
+.port-inspector-floating .optics-channel-heading>strong,.port-inspector-floating .port-optics h3{font-size:14px}
+.port-inspector-floating .optics-lane-selector{gap:6px}
+.port-inspector-floating .optics-lane-selector button{min-width:36px;min-height:32px;font-size:12px;padding:5px 8px}
+.port-inspector-floating .optics-power-grid{gap:12px;padding:10px 12px;margin-bottom:14px}
+.port-inspector-floating .optics-power-grid span,.port-inspector-floating .optics-power-grid strong{font-size:13px}
+.port-inspector-floating .optics-section-heading{margin-bottom:10px}
+.port-inspector-floating .optics-section-heading .tag{font-size:11px}
+.port-inspector-floating .optics-values{gap:9px}
+.port-inspector-floating .optics-values dt{color:#677f8e}
+.port-inspector-floating .optics-note,.port-inspector-floating .optics-state-note,.port-inspector-floating .eye-progress,.port-inspector-floating .eye-point{font-size:12px;line-height:1.7}
+.port-inspector-floating .optics-note{color:#6c8290}
+.port-inspector-floating .optics-more summary{font-size:13px}
+.port-inspector-floating .eye-controls{gap:8px;margin:12px 0}
+.port-inspector-floating .eye-controls select,.port-inspector-floating .eye-controls .secondary{font-size:12px;height:34px;max-width:100%;min-width:0}
+.port-inspector-floating .eye-downloads button{font-size:12px;min-height:30px}
+.port-inspector-floating .port-rate-inline{flex:0 1 auto;margin-left:auto}
+.port-inspector-floating .port-rate-inline label,.port-inspector-floating .port-rate-actions button{font-size:12px}
+.port-inspector-floating .port-rate-inline .port-speed-select{height:34px}
+.port-inspector-floating .port-rate-actions button{min-height:34px}
+.port-inspector-footer{display:flex;flex-shrink:0;align-items:center;justify-content:space-between;gap:12px;min-height:30px;padding-top:5px;font-size:11px;color:#78909e}
+.port-inspector-resize{touch-action:none;cursor:nwse-resize;gap:5px;padding:5px 0 5px 8px;background:transparent;color:#5d7e8c;font-size:11px}
+@container(max-width:230px){
+  .port-inspector-host .port-detail-heading.editing-rate{flex-wrap:wrap}
+  .port-inspector-host .editing-rate .port-rate-inline{order:1;flex-basis:100%}
+}
+@container(min-width:820px){
+  .port-inspector-floating .port-summary-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .port-inspector-floating .port-summary-grid .port-field-wide{grid-column:auto}
+  .port-inspector-floating .optics-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:18px 24px;align-items:start}
+  .port-inspector-floating .optics-eye-column{border-top:0;margin:0;padding:0}
+  .port-inspector-floating .optics-layout>.optics-more:last-child{grid-column:1/-1}
+}
+@media(max-width:700px){
+  .port-inspector-dialog{inset:0;width:100vw!important;height:100dvh!important;max-width:100vw;max-height:100dvh;border:0;border-radius:0;padding:14px 12px max(8px,env(safe-area-inset-bottom))}
+  .port-inspector-floating .port-detail-heading,.port-inspector-floating .port-detail-heading.editing-rate{flex-wrap:wrap;gap:8px}
+  .port-inspector-actions{flex-basis:100%;justify-content:flex-end}
+  .port-inspector-actions button{min-height:40px}
+  .port-inspector-floating .port-detail-tabs button{font-size:12px;padding:10px 3px}
+  .port-inspector-floating .port-runtime-grid{padding:12px;gap:12px}
+  .port-inspector-floating .port-detail-body{padding-right:3px}
+  .port-inspector-floating .port-stat-table th,.port-inspector-floating .port-stat-table td{padding:9px 5px}
+  .port-inspector-navigation select{max-width:calc(100% - 60px)}
+}
+@media(pointer:coarse){
+  .port-inspector-floating .port-detail-tabs button,.port-inspector-actions button,.port-inspector-floating .optics-lane-selector button{min-height:44px}
+  .port-inspector-floating .optics-lane-selector button{min-width:44px}
+  .port-inspector-floating .eye-controls select,.port-inspector-floating .port-speed-select,.port-inspector-navigation select{font-size:16px}
+  .port-inspector-resize{min-height:44px}
+}
+.control-recovery > span { flex: 1; min-width: 0; }
+.control-recovery small { display: block; }
+.control-recovery > button { flex-shrink: 0; }
+@media (max-width: 700px) {
+  .control-recovery { flex-wrap: wrap; }
+  .control-recovery > span { flex-basis: calc(100% - 30px); }
+  .control-recovery > button { margin-left: 25px; }
+}

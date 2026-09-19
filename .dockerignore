@@ -1,0 +1,4 @@
+# The build image has no COPY instructions. Do not send SDK/private state.
+**
+!deploy/
+!deploy/Dockerfile.debian13

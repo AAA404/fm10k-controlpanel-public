@@ -1,0 +1,11 @@
+{
+  "version": "0x101a0001",
+  "source_url": "https://raw.githubusercontent.com/Gateworks/bdk-newport/7647df88e4466b476fd1507a54578dd717e502d9/libphy/marvell-88x5123/serdes/marvell/sd28firmware/sbus_master.0x101A_0001.h",
+  "source_sha256": "83944dc83053486fc69185ef59a6d3b27c09629b66de65deebab6024ed0148d0",
+  "encoding": "4968 little-endian uint16 words, each at most 10 bits",
+  "binary_sha256": "9632c3da6e2e75f9d903750e18210cea98416a624ea2e816fc86218e33031d7b",
+  "binary_bytes": 9936,
+  "native_path": "/opt/fm10k-controlpanel/native/hardware/eye/sbus-master-101a.bin",
+  "scope": "Temporary EPL master instruction RAM only; restore pinned IES master 0x10130001 and its 0x20550045 swap image after each offline acquisition.",
+  "distribution": "Separately supplied reference firmware; omitted from the Web package and source repository. Upstream libphy licensing is separate from the AAPL 2.4 source license."
+}

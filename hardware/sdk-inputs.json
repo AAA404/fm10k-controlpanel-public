@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "release": "IES 4.3.2 / 20160607_6ports_15032017_14i_LINK_OPT_EEE_VRM",
+  "architecture": "ELF64 little-endian x86-64",
+  "headers": {
+    "files": 280,
+    "sha256": "089c625f424b2198a79ef48fac6ed38dfa78a8f0ef1c6937e3daf643dde2993f",
+    "algorithm": "sorted relative include paths, UTF-8 path plus NUL plus raw SHA-256(file bytes)"
+  },
+  "archive": {
+    "suffix": "opt/IES_SDK-4.3.2-20160607_6ports_15032017_14i_LINK_OPT_EEE_VRM.tar.gz",
+    "sha256": "c67e6338f534c68319eb12ef24ab917ca43f8c51e59fe3fa882f2397e7a6fcd7"
+  },
+  "libraries": [
+    {
+      "suffix": "opt/rdif-6.0.14i/driver/64/libFocalpointSDK.so",
+      "sha256": "285a75a497f27c9eb8f756358dab3118063535d46ba5cf2ad6f3b96dfd4d5ad4"
+    },
+    {
+      "suffix": "opt/rdif-6.0.14i/driver/64/libLTStdPlatform.so",
+      "sha256": "6051ed31fa91657e8421d2d7d699ecfe922a51019f9d19504121746769445727"
+    }
+  ],
+  "qualification": "Source archive and runtime are paired from the same supplied image; compile/link and board ABI checks are still required. These hashes identify inputs, not hardware qualification."
+}

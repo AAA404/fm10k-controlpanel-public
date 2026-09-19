@@ -1,0 +1,17 @@
+fm10k-controlpanel
+Copyright 2026 AAA404 and contributors
+
+Original project code is licensed under the Apache License, Version 2.0.
+Component-specific notices and licenses take precedence for third-party code:
+
+- vendor/netlab: Apache-2.0; retain its LICENSE, NOTICE and source provenance.
+- hardware/reference/driver/fm10k-uio-6.12.101-ies2: GPL-2.0-only;
+  retain the Intel copyright headers and the accompanying COPYING.
+- hardware/native/fm10k_eye_scan.c: adapted from Avago AAPL CORE 2.4.0;
+  its redistribution conditions are retained in the source and in
+  docs/THIRD_PARTY_NOTICES.md.
+
+No rights to the proprietary Intel IES SDK, manufacturer platform inputs,
+third-party firmware or trademarks are granted by this project. These inputs
+are supplied separately. This independent project is not endorsed by Intel,
+Silicom, Dell or Avago.

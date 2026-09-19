@@ -1,0 +1,1514 @@
+{
+  "project": "fm10k-controlpanel",
+  "sources": [
+    {
+      "archive": "netlab-os-main.zip",
+      "sha256": "635b3dbfc15c8100d3c852505554ded1e738083327e7ed891ebb05f4d2230cac",
+      "files": [
+        {
+          "path": "vendor/netlab/.gitattributes",
+          "sha256": "31e6fa1b5dc8039f8b69c85970f057144d8222a755677dd1efc1bb1b0fff5c00"
+        },
+        {
+          "path": "vendor/netlab/.gitignore",
+          "sha256": "d2e8d1b2e69dda971406f74ea041bebcdf3e7200de4b94865ba831b1177c0c3d"
+        },
+        {
+          "path": "vendor/netlab/CODE_OF_CONDUCT.md",
+          "sha256": "397d134cf45cdac55e2b2d05a4cb21a033ead37bf755540b692cca7462481fb4"
+        },
+        {
+          "path": "vendor/netlab/CONTRIBUTING.md",
+          "sha256": "9a6877c49e347544b8ee21e62d21bfa725a8410d643e1feba50cf2bcebef617a"
+        },
+        {
+          "path": "vendor/netlab/LICENSE",
+          "sha256": "0ba1da772b2bfb62348f4f5bb1171f51b50fa8386efb1767883109d74a90c718"
+        },
+        {
+          "path": "vendor/netlab/Makefile",
+          "sha256": "f62df32be25e607c06e374955a5a9b46fd166e119b413aa1dfd10e585e64f612"
+        },
+        {
+          "path": "vendor/netlab/NOTICE",
+          "sha256": "29ba09f2625b874c8bf3f273629b3f1c4155a8eef7acf13ba9822b7240656e2c"
+        },
+        {
+          "path": "vendor/netlab/README.md",
+          "sha256": "8c772a23db2a160acf5836b4df6d9b777dd5162aa0e63d2f3dfffaae9a252be5"
+        },
+        {
+          "path": "vendor/netlab/README.zh-CN.md",
+          "sha256": "ad6548a347f4194e1c2d25b6135b2d389dbfe6eb388126e5dd9f8304c1410540"
+        },
+        {
+          "path": "vendor/netlab/SECURITY.md",
+          "sha256": "906be9f06fc33f00a1bc282e40b85b4ed80d88cf5e7e2dca3bfe80dd38d346d6"
+        },
+        {
+          "path": "vendor/netlab/SOURCE_PROVENANCE.md",
+          "sha256": "b9025e488b5c2953a82530a0d2b9d2aeaa9e4fd7bfa3b728437588f6ca3d176a"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/cli.py",
+          "sha256": "33aa97c9ce74278c3e28b8f99aa6874b548f4bab3aa6d45626824e094415316c"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/cli_helpers.py",
+          "sha256": "fdadfc0dfc7e2af851cb85930cdfafe2295412fc0c97ecd03222207ba2b1582c"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/completion_dynamic.py",
+          "sha256": "27d3daf1fe82f1fcc3277ed631b236830b988c78bba81be1490f3a629f72bca0"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/completion_engine.py",
+          "sha256": "f058cb409d2794234bd80bae62985eed10221679d61ad8e2c2c516a0a5a53af0"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/completion_schema.py",
+          "sha256": "7c8047d0962b89ba30b9b6bd6157ffd2934f05d232f7e39c25011e313ad26e22"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/config_paths.py",
+          "sha256": "11a111521b13f3d69381e59bffc56fed15d01db1f8d37e710a9a354a20272739"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/errors.py",
+          "sha256": "18d11d72b56f149449de7afdefa21621e0db144cd6b7ce7ddbfd725108bee943"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/feature_policy.py",
+          "sha256": "71b01aa6f759bf5647d0065d1868a8e7ae66451bbd6cf3daefe68015071fc5bc"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/output_chassis.py",
+          "sha256": "fe26dcc4e2ae1faa5f08cbfe64c795e9440131f5842f6f93e778198ce8fc1c6e"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/output_common.py",
+          "sha256": "add96fc9f35bc60e6d546efcdeb473eaa32001d99a0e08c003de6452331d7f25"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/output_config.py",
+          "sha256": "40b6785525d222d1b9adb95c2590819488593218c832d9bc6c3aace0152ce6dd"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/output_format.py",
+          "sha256": "d7fb827c93f4f68ebe5ae54d655f3f9e1b90a6117666190630aee8045c8d58ed"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/output_igmp.py",
+          "sha256": "342be2206dc96863f005d728d38c2dd4736057abf2603e4c4ae4c2fa635271a2"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/output_interfaces.py",
+          "sha256": "8362074071ff2ed12772a32ee7d7a63b0c76d5e09d7d99bd2f5dad79ca903d06"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/output_l2.py",
+          "sha256": "6ed0b9d159f8336f20ac8d368e4f840777a93ba773c058e75a219f3fa7421f6a"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/output_l3.py",
+          "sha256": "2a1ad707890b4a40d80a3aeb5b99042abc1577c4ea2609d0b5ecf12ebf4cca09"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/output_protocols.py",
+          "sha256": "051302ddd22b7144fa02490b91b0898b6160df68d55c96112e0834991825d3e0"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/output_span.py",
+          "sha256": "099246b0d941d149ffda0e599d4af3e0a50720e6b4e77f7d92c0ab1d7260407b"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/pipe.py",
+          "sha256": "1242da890af6b46c72e97310e2471300a14be0aab6a378624ddbb6bb8cdd65c8"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/platform_profile.py",
+          "sha256": "2edce47fd60733aa78d9cf0390567216d04b9cca7483d5e05bb5a17f49d96fac"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/port_mode.py",
+          "sha256": "390c883d2ef50576f65157b9dd49c7e2c2450e1cfd0e29f4c693a57454319b4f"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/public_capabilities.py",
+          "sha256": "c5d00efa8d1054d265e579a2983cc8b859301823f8ca2ff4e96041df90d515e9"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/requirements.lock",
+          "sha256": "94cc4c0d2aaf54f0b9bda563732a4768f5f34480c6d9d787c5077722df92c7b8"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/requirements.txt",
+          "sha256": "aab77e59ab2e1da9bb9c080374b8a89b9a61ee65fca9be7e1d09ebebe78b0006"
+        },
+        {
+          "path": "vendor/netlab/bin/cli/session.py",
+          "sha256": "5f348da23bccb1ca63acec0042d5cacffc82c69d219ee734a47ceac3a52104e1"
+        },
+        {
+          "path": "vendor/netlab/config/logrotate/netlab",
+          "sha256": "5cfc0256aa440f11a5f11c8d6b9058df6f5595937195e7ca02ec61b6a2a5cc1a"
+        },
+        {
+          "path": "vendor/netlab/config/platform/default.profile",
+          "sha256": "2723449a093008dba09f2a6418bd026cf4fad2060e71b54b48e7d674e2a9e56e"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10420-current.profile",
+          "sha256": "3c71265babc0531c77c51581e0172dce435515bd51b95e35fd95c5e2dfaf08cd"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-12x10g-3x40g-rubyrapid.profile",
+          "sha256": "0f315fdbee771dc2289db39212193571340248b6e6479b20a44a8b288494c465"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-12x10g25g-3x40g100g-auto-rubyrapid.profile",
+          "sha256": "97c23ce3aa45751ac38d77465409be126ff7ec52d752382e26f8bc48ef49eced"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-12x25g-12x10g-rubyrapid-l3.profile",
+          "sha256": "2ffaa36807a51abd4a40eb855d9b3810a127fcb405a0f6b03cea52af5f5655a9"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-12x25g-12x10g-rubyrapid.profile",
+          "sha256": "8f0d0522ef1dd90b0253bfe12787641a5032c51ab5a28f3ad3e19bde1944e4ce"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-12x25g-3x100g-rubyrapid-l3.profile",
+          "sha256": "6a97932db677be56763f9ed8e91a0be67b98f393ce91e49e324c134161c5cae9"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-12x25g-3x100g-rubyrapid.profile",
+          "sha256": "2723449a093008dba09f2a6418bd026cf4fad2060e71b54b48e7d674e2a9e56e"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-24x10g-rubyrapid-l3.profile",
+          "sha256": "889488006a677814ae75886bc1592f40f02e265c63f6023eaf05ea52c83217aa"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-24x10g-rubyrapid.profile",
+          "sha256": "8509ca0f6f6a1ed75239735238153954fbcd8211c7b7175f04f984dd3da81f4d"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-24x10g25g-auto-rubyrapid.profile",
+          "sha256": "5d1681ff5aac15189fd2a830bdae8c18f7a5af26c368b526583f93b26ef5f968"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-24x25g-rubyrapid-l3.profile",
+          "sha256": "6c4d3a81e5926ba9a4ccc37734f627b56ba8dbbf1f967cee40e8334f6fb5464d"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-24x25g-rubyrapid.profile",
+          "sha256": "2814e7854742486acdb62ccf841566d692a89a22c77b7e71d149df11367ca302"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-6x100g-rubyrapid.profile",
+          "sha256": "ec88072b49c65d7e75f141c3e921ed24a899b8ca5695dee10c29f6bc5b93cd94"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-6x40g-rubyrapid.profile",
+          "sha256": "1a419554f2bd257d8113178638232b694bed1ea0066b98fa3044194170636292"
+        },
+        {
+          "path": "vendor/netlab/config/platform/fm10840-6x40g100g-auto-rubyrapid.profile",
+          "sha256": "795726e966c0e7b3fef5db790440cd465a8903f7be9b8d94138aa1292b72beb4"
+        },
+        {
+          "path": "vendor/netlab/docs/architecture.md",
+          "sha256": "48b84c81214c9817593adbae5375a8db34ace9e8b213b8460873db7cdf7fe350"
+        },
+        {
+          "path": "vendor/netlab/docs/cli-demo.md",
+          "sha256": "f1ecd5e92d60909e0cac4d9ef1d7f968fd2d54ef66b234b5e5da2275fcfb5b3a"
+        },
+        {
+          "path": "vendor/netlab/docs/development.md",
+          "sha256": "05605582e257826ec9f6da15de65e499c647a77f403b38b22cc2e2fd8376e80f"
+        },
+        {
+          "path": "vendor/netlab/docs/features.md",
+          "sha256": "0cb1019f02022eced5212c4a38834c1ebc2cf333312b5da9b182e294c33136b1"
+        },
+        {
+          "path": "vendor/netlab/docs/hardware-sdk.md",
+          "sha256": "c0edaae1d6ffd83c44e97bdb13872c4f7a44a49f3e0b96032a15a11136e2e0aa"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/acl_counter_snapshot.h",
+          "sha256": "44171b7809696931f23c812c2b9e459e475d2b05d969a39f8a8e985db9abddf8"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/config.h",
+          "sha256": "64dc05d4e741b8358eab32c7abd8ba647579f8f41a111dca882c01249301276f"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/daemon.h",
+          "sha256": "6045fcc1d8b9b24040d34f047c506cacfa6d0f90ff3c32df52d25bebda72319d"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/daemon_identity.h",
+          "sha256": "38a7e666b3fd5d7e5c7725f54dcaf037695bfa19445df1e6c923d5beb7e508a0"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/error.h",
+          "sha256": "53419b93d143b9c0558fe8512a496f3c252bdcdffbb9b0d575ce1999798857ed"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/event.h",
+          "sha256": "0e6f885ecb17a2430e558898bd1764b1d29a3c6b1134a69af40b2ef11601c812"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/hal.h",
+          "sha256": "a88bcfa26e89e24ec0ca57e57efc418f9039f69d44d19b006be0fcf59ac61364"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/hal_acl_owner_transaction.h",
+          "sha256": "8c0317f87b9095a054ad7b596dcc29690788c41faa974d572c85a25e3f8d2fdb"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/hal_flow_table_token.h",
+          "sha256": "2f236e34423df08d20d0713b9db6b7cede087ced139ebb36fff3ecba69d499fc"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/hal_l2_flow_snapshot.h",
+          "sha256": "b2b1c1b11c20333669b287eb51f5446de37df44e61d9804a21fde8e0e7b9159d"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/hal_presence.h",
+          "sha256": "ebd34de54f3bbda005414bd9617003747cc817c54b800d8393b96a119da6aaca"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/hal_qos.h",
+          "sha256": "166c5077a8216d677093f322b0bf760fddc5bf671e4772ecf2588fb383f9e95b"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/hal_transaction_snapshot.h",
+          "sha256": "0dc6496ba9a6009450d3fadbf0097217aaeeef2d811450fd750668ea0fe1d2bd"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/identity_broker.h",
+          "sha256": "e99bfc906a45862d605277046bbc217fad0d0602d67184e4dabd7d945d80b409"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/interface_id.h",
+          "sha256": "85611ae056db52f58347d0aac9c2d7cede3e9b69be23892a22cec1e84d228da8"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/ipc.h",
+          "sha256": "2be35bb169537157c87d622fa75e5d32e23274bec46f269762ceb3062446872f"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/ipc_contract.h",
+          "sha256": "a6e2922bfc0fec44a6a88132e1b7615df5cdf628db5be6ea267562837b779291"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/journal.h",
+          "sha256": "5820788bba4fde4f07bf178f0b484b819cb805ece4a768f2e931b46d59578959"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/l2_plan.h",
+          "sha256": "06e9a379a1eb6ab6bd7e58075a3d324b87037d228a6ebd1723ff7dd656cd402d"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/l2_plan_build.h",
+          "sha256": "6bf226ce8dfdadeebeae77face0cf66091a13c828e904f33a023c0c44986df90"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/l3_capacity.h",
+          "sha256": "ca6eb1783ebd4856608ec80a2ef635b2c5562211b39e1f269c2bbbc2f55c7813"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/l3_owner.h",
+          "sha256": "1434fa3507031af3529f495e807d91336ebd79f26d052bdc9f3bca817e29d8d0"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/l3_plan.h",
+          "sha256": "1e91e7bdff20a2b7920e69db4dea1e97bb9187bd45636f6abf16086c7de4df50"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/log.h",
+          "sha256": "eefc3d88bc6aa8508ce83581221876bf30ff8e8128ab6cb9674360e0f64cb32f"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/mac_snapshot.h",
+          "sha256": "ee9b38bd12b696935cac5546227704abc716deb60128400fec8804b7d0585f0d"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/netlab.yang",
+          "sha256": "42a85384b8d9bbfd92d0bff62edabfaaafdfae92128d8227c6d45a35b435b9a4"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/pfe_capability.h",
+          "sha256": "a3e553059be79bedfe244698e21205dffd26b59ce93a160c35072cbd509620bd"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/process_identity.h",
+          "sha256": "ef31513b4736eacc7f67d7b0130095c5ffce369a5d74b6a1ef93f899b7465d6b"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/public_capabilities.h",
+          "sha256": "a06ad1eeed361979a3fd41162a563a26dec2d418da087160ca9f74fe4ec64af6"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/session.h",
+          "sha256": "34d751eb638d3b2162f20ebefb7e58fc385bd9bef23629263394178e28b55557"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/sflow.h",
+          "sha256": "7e9831c9a2eeb4242eeace449c00b615b320abc6f56ea1fe893d10508081aba5"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/stp_snapshot.h",
+          "sha256": "a88b788157236464665bea58752774b1bd0951eed7a87451032e8ed9629989d7"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/types.h",
+          "sha256": "f2860e2ff391d51a223c16e4dcb211b7e4c44d6f0328130702619df3cfe6d7d1"
+        },
+        {
+          "path": "vendor/netlab/include/netlab/yang_config.h",
+          "sha256": "da8f9a8946efece845c7e4da4d4dd59cbe28fd2e25c7e08bb2189f17db90941b"
+        },
+        {
+          "path": "vendor/netlab/lib/libconfig/Makefile",
+          "sha256": "76174c3985db25bf5f40a09e6fd90865a57983c1b456893d00f7fd83443dcc03"
+        },
+        {
+          "path": "vendor/netlab/lib/libconfig/commit_journal.c",
+          "sha256": "89109b68380b76d12aacacb78282d111c3155ecbf973de8e17e4a4a8115e9aae"
+        },
+        {
+          "path": "vendor/netlab/lib/libconfig/error_msg.c",
+          "sha256": "6ab28d10f77507f617b73106fc500610c6bdd9a6e9191d47c655a5c8e4841d99"
+        },
+        {
+          "path": "vendor/netlab/lib/libconfig/interface_id.c",
+          "sha256": "3c1fbe7fc2b1893347f6f15c839b9f2b85888b37ca64b45abb1610703c4091cc"
+        },
+        {
+          "path": "vendor/netlab/lib/libconfig/session.c",
+          "sha256": "6260b801251a5ea08f555863167a01f5955f26c5eb297357eb5b5eb192abe098"
+        },
+        {
+          "path": "vendor/netlab/lib/libconfig/yang_config.c",
+          "sha256": "bf8ba85f81ea85d288952c59d18bdb7886cb60f018b2ddbe833df6fa9a9be4a4"
+        },
+        {
+          "path": "vendor/netlab/lib/libdaemon/Makefile",
+          "sha256": "930210ce324642b16011d09b60b654f12457986b219f1816fa3a2fd76b21e116"
+        },
+        {
+          "path": "vendor/netlab/lib/libdaemon/daemon.c",
+          "sha256": "9e8a48ae5ab3605dc05998ea7608ea0b8393ee09892151986b30c284a5d50791"
+        },
+        {
+          "path": "vendor/netlab/lib/libeventbus/Makefile",
+          "sha256": "ba29b31bfff906439a142230b54928255773aab939dd9f907e02ebc05d7b33c4"
+        },
+        {
+          "path": "vendor/netlab/lib/libeventbus/eventbus.c",
+          "sha256": "c9265ccc3c5461e95e931384daf9d92ea2b81573d3aa2a3906eabb2206fae3a9"
+        },
+        {
+          "path": "vendor/netlab/lib/libipc/Makefile",
+          "sha256": "246b76a5e45c398b24fb1c1eed880d1bd614b92726ef63f18b0025bc85faa667"
+        },
+        {
+          "path": "vendor/netlab/lib/libipc/acl_counter_snapshot.c",
+          "sha256": "f53d71619f5b7cb94f733b47a1f3ea0e0ac69429f362a57fa24e88c409b8bffb"
+        },
+        {
+          "path": "vendor/netlab/lib/libipc/daemon_identity.c",
+          "sha256": "4210e41d337bfb477e0f7a41167b972331fb8982c39dc5e348a369fc225ee70c"
+        },
+        {
+          "path": "vendor/netlab/lib/libipc/identity_broker.c",
+          "sha256": "f44401f67cce33657d8b5ff0845ca65c77ba73ffa28c0f77329b1d50d05bf8fd"
+        },
+        {
+          "path": "vendor/netlab/lib/libipc/ipc.c",
+          "sha256": "7c42a8de1bc8e2aae3ae78dcdf4a70f1e88e3dc9695ac04f10021dd67a76d0ee"
+        },
+        {
+          "path": "vendor/netlab/lib/libipc/ipc_contract.c",
+          "sha256": "4c5200d61a9944d212867c408a83119941ee3b91edd5bb36855ee79dc5da5b90"
+        },
+        {
+          "path": "vendor/netlab/lib/libipc/l2_plan_build.c",
+          "sha256": "9300e2e93225e3b88e1997f2d4cee9f9e483f07aadccd4f119ebdcb43d080f11"
+        },
+        {
+          "path": "vendor/netlab/lib/libipc/mac_snapshot.c",
+          "sha256": "4e33ff2e150f37d37c2f1e0fdc3d0b9345f16b50f426f043a7bea7ea1a3da119"
+        },
+        {
+          "path": "vendor/netlab/lib/libipc/process_identity.c",
+          "sha256": "172849fa661f2c7ac4f00ba430ae16bd6c80907e90e200d45a63d8368c92c054"
+        },
+        {
+          "path": "vendor/netlab/lib/libipc/rpc_client.c",
+          "sha256": "c675d0b59768d149fa9d38b5fe573cf0c52f2980e2db6763f0cffa78f9d5b620"
+        },
+        {
+          "path": "vendor/netlab/lib/libipc/stp_snapshot.c",
+          "sha256": "2ed9bccbc5fc3a2c4f4fabb983fd37b69d7777b21da86b0856846d0ff01b2158"
+        },
+        {
+          "path": "vendor/netlab/lib/libl3owner/Makefile",
+          "sha256": "d20b497607e701566e28838f7abe840da7a728caafc2c1859d42e2b4552631d9"
+        },
+        {
+          "path": "vendor/netlab/lib/libl3owner/l3_owner.c",
+          "sha256": "a9f8323fb1707ea529287834d8ec9a645a1b4423106fb173c21c950d6c6bee26"
+        },
+        {
+          "path": "vendor/netlab/lib/liblog/Makefile",
+          "sha256": "27bd575a81326b538e5e4e42bdf4448491eea3fea02657c3daa7d4fc978b067d"
+        },
+        {
+          "path": "vendor/netlab/lib/liblog/log.c",
+          "sha256": "4200bbe83024672da3ddc1599a71069c43cb59d056d8e7ad40785f3281d31423"
+        },
+        {
+          "path": "vendor/netlab/mk/netlab-build.mk",
+          "sha256": "ab446358e4ffa87b7c0b4e7771984b75ab68fcc3715b341f6e3049cde855bad9"
+        },
+        {
+          "path": "vendor/netlab/mk/netlab-deps.mk",
+          "sha256": "bcbbb277a634b013b1c44b5af68bd985d7ffb6db91eee5d420b311ae7aac57a7"
+        },
+        {
+          "path": "vendor/netlab/sbin/chassisd/Makefile",
+          "sha256": "ab03020c83be856940c2d41f967c1e062699b3b98a7818946ac934e0af397deb"
+        },
+        {
+          "path": "vendor/netlab/sbin/chassisd/main.c",
+          "sha256": "91c3fb81a867000e8510d8d54080e2aeaf93e7e422bee942ce386f34f951d969"
+        },
+        {
+          "path": "vendor/netlab/sbin/configd/Makefile",
+          "sha256": "ee0f4d9d8b4a48a7e6783f7e251cb83d62dfe0370e19c41fa8f07b26a4c0323f"
+        },
+        {
+          "path": "vendor/netlab/sbin/configd/l2_client.c",
+          "sha256": "df785f28fb5d7aab6fa090d4cb55c179439ef95621d7663c3c7a4e7a459fe272"
+        },
+        {
+          "path": "vendor/netlab/sbin/configd/l2_client.h",
+          "sha256": "e9918d8ab9e9fb968f21a16cb83b8e292f55284d0a3ad10e7248666923a02cd6"
+        },
+        {
+          "path": "vendor/netlab/sbin/configd/l3_client.c",
+          "sha256": "d9ee99c6b10e28f6412cc6f543eb56d772e193f70a2cd403fbd79271ac565e3a"
+        },
+        {
+          "path": "vendor/netlab/sbin/configd/l3_client.h",
+          "sha256": "59c6800969f73a0ca5ace1a5778223b76bf12b0b966c9a9afb945341ee2cc51f"
+        },
+        {
+          "path": "vendor/netlab/sbin/configd/main.c",
+          "sha256": "dec1ab0c293987d541b89b8dbc1a7ea619c48d113ca39bb83bc3b8622208bd7e"
+        },
+        {
+          "path": "vendor/netlab/sbin/configd/public_capabilities.c",
+          "sha256": "de4df282ff5a7624ca103b4ed4068e2475c16f01a861670147c5ea20fe6d6e02"
+        },
+        {
+          "path": "vendor/netlab/sbin/configd/public_capabilities.h",
+          "sha256": "da9d9e185a04d30d41849a7f715575a2912ba855cc7b37fd7aa3cb8360383086"
+        },
+        {
+          "path": "vendor/netlab/sbin/configd/runtime_client.c",
+          "sha256": "6692664d99902eff2da5cc39e6a77eb814b18139fd2557679a088d49bb1a6ae6"
+        },
+        {
+          "path": "vendor/netlab/sbin/configd/runtime_client.h",
+          "sha256": "6e0a9a92059bbae1d470b1a0a97ea4f30a3f00d7a0d3827c5375f8cdd75b0ccf"
+        },
+        {
+          "path": "vendor/netlab/sbin/configd/switchd_client.c",
+          "sha256": "f885b606420514987637a45bf30cc604ca15db4c42da315f3563638bbc1b8423"
+        },
+        {
+          "path": "vendor/netlab/sbin/configd/switchd_client.h",
+          "sha256": "697eb54f194dfa06c149b9163151489b70d37dda8532a85f5d3e0109636ac9ea"
+        },
+        {
+          "path": "vendor/netlab/sbin/identityd/Makefile",
+          "sha256": "5faf389d8965b6850b4eafc70697a369919fe7eb297befaf2ebcc03a286dc2eb"
+        },
+        {
+          "path": "vendor/netlab/sbin/identityd/main.c",
+          "sha256": "aad30c1fec2e6b71df0a59300c477401adfc5ad49b8e1989cbe6dc41655ddc0d"
+        },
+        {
+          "path": "vendor/netlab/sbin/ifd/Makefile",
+          "sha256": "64d45831e482cb0187b1a06d924ac894ffe592c16c62698bde12112d40471432"
+        },
+        {
+          "path": "vendor/netlab/sbin/ifd/main.c",
+          "sha256": "614a6291bc16966c27c9f1212c2f7fdff37e7bcc3b6e704639a79d965c6bdb19"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/Makefile",
+          "sha256": "4298f306b88aa22d0edc2cf02ce1cf84fdc7c200259ed29dc6422eed2fee9eb2"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/igmp_snooping.c",
+          "sha256": "80a017df917d39e468055e49e917bfeb6bcb7b438a867d19ed43c6d0da88ce67"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/igmp_snooping.h",
+          "sha256": "aecc719e070bfc7c05fc31b3ee9729cfc023ad2f68b097bb41d332bf5665bc63"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2_hw_probe.c",
+          "sha256": "f393dc5685f8bc4d7343754086c25fcdb7211de30078164147269cc42cf75450"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2_intent.c",
+          "sha256": "45f74fb117ba6e28c6c1f76c9d9163ce8d32d4ef3d83522a2d019bd84352556f"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2_plan.c",
+          "sha256": "65f2dc5bacb7ab1357b24099f574857ed49504bff9a716ef04a080785ad7a89d"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2_plan_internal.h",
+          "sha256": "5e90569a6425762776bd7ce8cf370ba5a037c230ece2b7c24be666d13ecf41ae"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2_plan_stage.c",
+          "sha256": "86d54633daa6d8005735daef3be42d891ac1ef54dce2fea079d732af17628fcb"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2_plan_stage.h",
+          "sha256": "a1cd8a486243d91b7fc62f221e4337edf26663d287018e0cd412ef07a9e238aa"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2_plan_text.c",
+          "sha256": "95e4f61507b461c301c0cffd3ea4338bef43a2ab7e2e7ff67c3acb2aa5031a1f"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2_plan_text.h",
+          "sha256": "96654d8a5a783e687b1ece583207b8d23137d97f73e39fd8250b190044fc8792"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2_validate.c",
+          "sha256": "1fd8b20c005f1b6136e1a2ef8971dfe2b6b7e48d281fdcf471d106b21a51766d"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2d_cache.c",
+          "sha256": "0a247a7ea9879081c5fc80b21c555e81240830403f3dd625e30e6e1464caa7ef"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2d_cache.h",
+          "sha256": "b4d32fd99628169f2ddef0deb56468de4dbfa1d0bc3f6eceede748f1c076f153"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2d_paths.h",
+          "sha256": "f3bb57c0e3143a7dfd84ad57915706e19be3063ba7b7176029185eccd845e675"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2d_show.c",
+          "sha256": "0075f6b456f6b07ece129b769cdaf713f970921670e944c16b7e17932b7257b5"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2d_show.h",
+          "sha256": "714c12995d43172b2cff177cc84da5b46a707853d6ab2fd94ca99efbdbd7d4db"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2d_state.h",
+          "sha256": "56e64598217fb67588ba4d81c256ed99119d30c8f647842c1d9a72f3d8ed3530"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2d_switchd.c",
+          "sha256": "836631bd2c3d9733eb1a1a24bb4584a42f540b9aa43424a493ca0698e9061624"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2d_switchd.h",
+          "sha256": "1608a92173c0b2486de96d99d7e46995bd66fea9bf2621833f0e24a0d6ff3c6f"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2d_util.c",
+          "sha256": "a595117e54df691bb0e868cdcf5467076fc43a3d2195982cada1a4d5a328fc38"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/l2d_util.h",
+          "sha256": "578d4c56db62c0dca13b451ad2359019460af2b767c0d1ac2c7635707c502602"
+        },
+        {
+          "path": "vendor/netlab/sbin/l2d/main.c",
+          "sha256": "3edbe50b8b335f81d974f8007d2c6f1c8236dde9040ddb88f2693c8667f255f2"
+        },
+        {
+          "path": "vendor/netlab/sbin/lacpd/Makefile",
+          "sha256": "cda464cd3724b71fbed1ea1a5dc4818e232e6933c9a37be1caf7ba7b898b2dfb"
+        },
+        {
+          "path": "vendor/netlab/sbin/lacpd/lacp_config.c",
+          "sha256": "24b52e9f42e4c386fccd88ac41e413fd2525ffd9ad64eed6c41c99566216c686"
+        },
+        {
+          "path": "vendor/netlab/sbin/lacpd/lacp_config.h",
+          "sha256": "8e2c0c70cbe3f2d499641bc50decddac096719d9583cc2ec5c0878688e29bcc1"
+        },
+        {
+          "path": "vendor/netlab/sbin/lacpd/lacp_packet_io.c",
+          "sha256": "141f8a8069a6e8638e19cf4f096e2a9176889a55c6d9a00fde676fb06437f9c4"
+        },
+        {
+          "path": "vendor/netlab/sbin/lacpd/lacp_packet_io.h",
+          "sha256": "f5f8a4f2e1d92352d3ac0f253b93a40befc3704c0e4e3825816c5f5a124299cf"
+        },
+        {
+          "path": "vendor/netlab/sbin/lacpd/lacp_wire.c",
+          "sha256": "5412ee54c8a5a62ff61f6ff28ce8325f358ff931f3990efaf801f9cd4986ebf5"
+        },
+        {
+          "path": "vendor/netlab/sbin/lacpd/lacp_wire.h",
+          "sha256": "617dea9f246d8e8eaa6e1a0586494c3029526677c4fcd15710eaf0d07e5dbe19"
+        },
+        {
+          "path": "vendor/netlab/sbin/lacpd/main.c",
+          "sha256": "0ce5ed6564f3422ecc1ec2690180d29245611bb05e34e99f7b6db0ccb0b25b0a"
+        },
+        {
+          "path": "vendor/netlab/sbin/linkmond/Makefile",
+          "sha256": "c9902b9d2ae4d849a0c15139d4677569723f89307e44567f450baa85f8d92f35"
+        },
+        {
+          "path": "vendor/netlab/sbin/linkmond/main.c",
+          "sha256": "89308f01750264d36facabb21187089308ba268f187f7270bbd70029517cd7f5"
+        },
+        {
+          "path": "vendor/netlab/sbin/lldpd/Makefile",
+          "sha256": "117029e347320ce78348246ea4b4b9c3b2f495182841fc823698852f55c222c9"
+        },
+        {
+          "path": "vendor/netlab/sbin/lldpd/lldp_format.c",
+          "sha256": "79aaddf57c11dc9e5eb19c81a47754df5b4f9b3f3a361e308c6932b21bb17e1e"
+        },
+        {
+          "path": "vendor/netlab/sbin/lldpd/lldp_format.h",
+          "sha256": "b6643a91c8d02d110f9d084afe8ee776ff7e61c0b1fea34b761c1fd5d1f43701"
+        },
+        {
+          "path": "vendor/netlab/sbin/lldpd/lldp_tlv.c",
+          "sha256": "2f5dfafc461d1c9392761a5608b7ee7dba50ef0520abc1d2bf6d840ea657a576"
+        },
+        {
+          "path": "vendor/netlab/sbin/lldpd/lldp_tlv.h",
+          "sha256": "73e4fff3c9cd95b7e960c35255bd396b0ba974e707630850237a5afdb847ecb3"
+        },
+        {
+          "path": "vendor/netlab/sbin/lldpd/lldp_xml.c",
+          "sha256": "06cf749acd6edb53e11bca9a76433badc64184a98d273972beaeb1073789689a"
+        },
+        {
+          "path": "vendor/netlab/sbin/lldpd/lldp_xml.h",
+          "sha256": "84e0cae2b24f41295017b65fc58ffdfaac21255cda30f4977970bf2dc551b179"
+        },
+        {
+          "path": "vendor/netlab/sbin/lldpd/main.c",
+          "sha256": "c4b1433ecf90444eaf07ab4864dfdbf5a670f63b395a54ffc100980ace7f4b19"
+        },
+        {
+          "path": "vendor/netlab/sbin/mgmtd/Makefile",
+          "sha256": "500b61adc996ed3693a1b0082fe84883b0587b924f39386f4bf7d7a564e4950f"
+        },
+        {
+          "path": "vendor/netlab/sbin/mgmtd/backend.c",
+          "sha256": "225925d43adcebcfd9fff25b8caf07be644e9235b7eeadf0437346d139b98aab"
+        },
+        {
+          "path": "vendor/netlab/sbin/mgmtd/main.c",
+          "sha256": "e8da4521695bc8aba3b9b2c678e66453ca4b59191077a7aff46c4207363258bc"
+        },
+        {
+          "path": "vendor/netlab/sbin/mgmtd/mgmtd.h",
+          "sha256": "f08045f2bb66c47229a8fb30d0e639f62e314bb5185db524c7f72b6926428d47"
+        },
+        {
+          "path": "vendor/netlab/sbin/mgmtd/routes.c",
+          "sha256": "6876870ca43e03c92d9a0c47caac1c5f1dd485b4e8653feee23b0981c0c1b8a6"
+        },
+        {
+          "path": "vendor/netlab/sbin/mgmtd/session.c",
+          "sha256": "6531dee719e38182a4b9957d73c9b675b810ecdcfe38fd91ccaff2f617acb524"
+        },
+        {
+          "path": "vendor/netlab/sbin/packetd/Makefile",
+          "sha256": "3ecd296969a557beb7778f9c76623cd64f9b32a440a9ad5b749a3af47d0ce786"
+        },
+        {
+          "path": "vendor/netlab/sbin/packetd/authority.c",
+          "sha256": "bec208299f5680d6241417b8837cfad20f7b9a3791268d92fad782595ea8b1ec"
+        },
+        {
+          "path": "vendor/netlab/sbin/packetd/authority.h",
+          "sha256": "c74192b4222c537d1a008693d4d34c373879307a3c7afd9a7e1b83cd343d7f5c"
+        },
+        {
+          "path": "vendor/netlab/sbin/packetd/main.c",
+          "sha256": "0889f9f3f24c26121b90db8b2dd53cf872c27f69e1233f72d729c132ac6c16df"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/Makefile",
+          "sha256": "99d804822df337a99d0e23cbbe0ec7534d45a6f9fb4d0d3fe7d14199680885e4"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/fpm.c",
+          "sha256": "530caddf44fa160c3dbb1f05094033ef0430dc8832189cacd4a70293ae9e077a"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/fpm.h",
+          "sha256": "4d77f1a1c79da50bf3dcdbeecee327c5f36a2caa513b458beae756375205fc82"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/fpm_test_authority.c",
+          "sha256": "5df9aab7ab131a95da771c2f4f4f651ccbeca4ad3eeed8dc8c487263f52b8ffe"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/fpm_test_authority.h",
+          "sha256": "1fa78e0a34e1d928acc690c40d7a4e573cdbfb30820901088e40abbf3e346396"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/frr_config.c",
+          "sha256": "acaff6bb15ea0735a091f9f77544bd5df2d75544af4cf1d9186651996a14ee3e"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/frr_config.h",
+          "sha256": "2314295c0d5006547808d7f9afe7c418ec64a96b72c28cd9dacaa70c66bc4b48"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/frr_runtime.c",
+          "sha256": "43c9fd47e04e66f190ec513bc6c53562d4c10e3c430909ba21137ac108a1393a"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/frr_runtime.h",
+          "sha256": "986df9476c6dab153f02321f3894bb664699f9f8180966d97b75375c319b358e"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/frr_telemetry_json.c",
+          "sha256": "bc6b7bcfbddda59fc6f28183334753067649a0d1f59121e3d5aa3ef1774f364b"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/frr_telemetry_json.h",
+          "sha256": "643b226adba6daa5dec78a1a7af6e36f18e83de153287cc7289cfb1bb2910cb9"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/main.c",
+          "sha256": "5f32b7101a57a165170da6e5bcb90f9dc09293ee7534bab1c30c4ad9e62fdfa4"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/rib.c",
+          "sha256": "708287c06b38533e83e7b40659fc97a7dcd355577acea1c065c44776fbea6c9d"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/rib.h",
+          "sha256": "99c1a875560989763a8ff451b3ebecff7af1ee37f93a7b178706f82fd92fd8dd"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/switchd_owner_rpc.c",
+          "sha256": "dbf8dddc3b7a15c9be1ce1149f2d11ec98253d3f0ab34283c405a22d02841050"
+        },
+        {
+          "path": "vendor/netlab/sbin/rpd/switchd_owner_rpc.h",
+          "sha256": "79327c6daee0f485e2648fd25412f888e2e710c44e0a716e2c3b2beed477e30d"
+        },
+        {
+          "path": "vendor/netlab/sbin/statsd/Makefile",
+          "sha256": "77f555acf29dad5cf4d40f7e4652ad2ff40aeec3b6fa5559c70ec4ffc8c14d07"
+        },
+        {
+          "path": "vendor/netlab/sbin/statsd/main.c",
+          "sha256": "69de6a5a720365182acc994675623de9fa6684e0a6db1f7ddc074bb8a33d97fa"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/Makefile",
+          "sha256": "0f67f90cbaec79a24847a7cd9f154194c776ab039971bd063a6b82bb95977409"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/main.c",
+          "sha256": "7362110b798009bd6f10083c23d6d295991232f9fb37b900938c9f37a8e50197"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/stp_config_text.c",
+          "sha256": "46a8a1052fe1b583bf5523f6b10222ad17c49c6c3008635a83e72da871b3bc1e"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/stp_config_text.h",
+          "sha256": "e89e9cd18dc64a0a9033d8d32910552dd851e4c8d7fb399615a654ae54909658"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/stp_internal.h",
+          "sha256": "fb9af83c167014f7981d411fd58cb9bb538f33069394001610bc850e2c073bdc"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/stp_packet_io.c",
+          "sha256": "99c60badc41aebdf9e90137f292dc3267fe69d8c84fb970623d42c2b183ee0b8"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/stp_packet_io.h",
+          "sha256": "4a486197543f696ca851670d97573284b69dc48a619782cc1b4c6b1179e2b0ef"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/stp_show.c",
+          "sha256": "997a2a4a17b1814aaf426f7906c079a6c3efd01e5855374f25be21d22b996e1f"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/stp_show.h",
+          "sha256": "284bc4b7f1c1bb186c48f564a54370e960f7fd3deb03c878232d56d34288578b"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/stp_switchd.c",
+          "sha256": "f78fb18484406dce6e9f3e9918bf719c0fd2d8c3936c0ee5ebbdcf4467a2c9ce"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/stp_switchd.h",
+          "sha256": "01b829a33a67ac6002c443994dd99a51416c1ddd04c3e8b9a313b90a529476ae"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/stp_wire.c",
+          "sha256": "374e8aded063aadf9917139cdd4ba470e250710e03f3561dd3a16cb211b412c8"
+        },
+        {
+          "path": "vendor/netlab/sbin/stpd/stp_wire.h",
+          "sha256": "7261085cfb02afb8cd7cb658db9b57600d89c52815b49353b5a0fa487ad82b96"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/Makefile",
+          "sha256": "7eaa608664a52ea01885fa222df6b17068252bf54d4b84413db89f18851c1b0b"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/commit_finalizer.c",
+          "sha256": "85d400a6457160e07e5ea9665b0322db66b5cdd46ea813cbc6965eb27cad3c65"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_acl_counter_snapshot.c",
+          "sha256": "37900d45bf0c5109a6d00590e1e3de6531bd6091df9bc1bda9920c6c35c67fbb"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_acl_owner_transaction_api.h",
+          "sha256": "25c7904550f364d24eac2aaa9e98636e7bbcfff9e20a6b1a7317699e7591fb56"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_acl_policer_probe.c",
+          "sha256": "aefa8b61d67845a6eff5f24c7f939e1598822e7cf120f070cf20579ef88213cc"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_acl_resource.c",
+          "sha256": "460249e2e32386adf1a1ad6abd1f2cb51b88ea719dd14e4c089175b216a387da"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_acl_resource.h",
+          "sha256": "9e8c0ca42a75d727fd8d72bb5d7f597d4c3a8460cfbf0b03ac4a1b5af96fc5c1"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_chassis.c",
+          "sha256": "5fe4d0189ed09cdf06ed26b3decc9bc48c7a34b539396a70bfbfbd0830660736"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_config.c",
+          "sha256": "05aaf2a711737e74a1dcb8bfe6bb2c5901ff5c78a2f3cb77503ea4cb6a8ea4dd"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_control_plane.c",
+          "sha256": "728ca6f1d6674d953595ec1c73e9fa4581aabb77b6b818fedf36613887c4968b"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_counters.c",
+          "sha256": "b8924c96cfb3a46e8bfcb02b442e5665a6010a9829beee7593389ccc87bb62e0"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_egress_rate_limit.c",
+          "sha256": "29f238360e8201476a8a1f39e3e81e569b7db8a16eff1e4b19763ec41e34ab66"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_flow_table.c",
+          "sha256": "2d738bb84265deb9e83162a0b88573a5d473d00cd0dd103fdda08c9cb47d4db4"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_flow_table.h",
+          "sha256": "ecd81c85d2b305006d6f081cc1c1fc43755f95959c0af849a7a8ee4bab0eea9a"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_ingress_ipv4_acl.c",
+          "sha256": "090318cc664ba2fc7d83e566c0dda8ce5a4995506de795df96c7a664a5253284"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_l2_security.c",
+          "sha256": "10707d4342401bc5e11ef26e5d365d1018c523c01d0a1f8bbf6a2077fb3d41dc"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_l3.c",
+          "sha256": "8cbae61c38525251719f1488bcd34845e1eae4ca430be15681e098850858ee40"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_lag.c",
+          "sha256": "4af72729f5a2b23a99c071afa294afd61db8427b3daadac8f14736af4ecb0e78"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_mirror.c",
+          "sha256": "c90571b1e51e2d8eb273c54ede745d7d734362954f5b0c1c5b1c3e9b26f0158c"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_multicast.c",
+          "sha256": "32c94b93a848576bca1f29e20de21425b8592e5acdcf23b02e2f1f487de24cd7"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_packet.c",
+          "sha256": "a1e2676a2f7341413a348ea180b729047ed326589d375a1e4a2d78c7e05bc15f"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_port.c",
+          "sha256": "587a92ef23bc6af3458c4c3c3743ba970524a7b11da99f084232f95e9fb7fd46"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_port_xcvr_sdk_adapter.c",
+          "sha256": "f2cde716953cbda8ddd15cfda5b806ce8b7371d74125cdd247b4c56e4bed7769"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_port_xcvr_sdk_adapter.h",
+          "sha256": "00d2649f8c0de56e1b67144fe03f9c47ffebe57928bc30db4f63c9bcc86177c7"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_qos.c",
+          "sha256": "166b5fcabcacc56fa4c2d56b8a6155081130fee1c1865d21b55d0931d9fec30b"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_resources.c",
+          "sha256": "7e20b9c304d3a3835cb9cdc93df0b68666f3bb1d664fa415c20830286fca7378"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_sdk_runtime.c",
+          "sha256": "c48b630e9fa6bb562f291a11df540a0587937ea8938cb1ed71ea92ab2e742cfa"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_sdk_runtime.h",
+          "sha256": "e6663fb653b2217a9a08439bf03a9d2bffe4dc5fc5c52445192e55173e031035"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_sflow.c",
+          "sha256": "1d0c83e0a143d773d48918bfe952d75760964bf43accab69911a860b43b42c69"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_sflow.h",
+          "sha256": "a223288790fa4111cf46964f381c85d51972046335cbb01e4c24d5fd52490b62"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_storm_control.c",
+          "sha256": "4b1bd727c47bf7a59e298e4a37a02dc45326cae9a9bb841e8fcdee90902b8f8f"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_switch_config.c",
+          "sha256": "81279d3d6a35b1e87dd2100676dec5672336b24436fdf121f90ac6c9667e792c"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_vlan.c",
+          "sha256": "aa6cf4c3f3996a166196eb7816ec4a9f02f0e39ae5a381fe0978ea88b04ca1d5"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hal_xcvr.c",
+          "sha256": "f2aa2e2327709cbb359f0f49e1333eb935c77d15c2da0647950e6409201ebd83"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hw_state_tracker.c",
+          "sha256": "dcf430ee9f16d64f6757ff167a12516350903d01cb043fa6dacc39c82ea0637f"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/hw_state_tracker.h",
+          "sha256": "39b30e31ddb9d0d2273b74bb3b65d8635a1685111fb2b2b4704be8f229428c49"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/l2_plan_parser.c",
+          "sha256": "fb5635e75c5c3fa30e82ccce927a07dc27c7c7c04c1890058d59bfa5b2e27b45"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/l2_plan_storage.c",
+          "sha256": "310ac1e2f32eed54457c5df719f21ad4443316671645ca7f149fd48550d9c036"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/l3_plan_parser.c",
+          "sha256": "0f4d73d49f8b081b22b0f107c679b20875bacc89225802c2cb896d6156c5be7c"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/main.c",
+          "sha256": "ecf6f3e80db349e6436f9575939ca0b840cb8bb5ca24434e9f43924547275392"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/pfe_capability.c",
+          "sha256": "1e6c60c157336c56c4fd77479e1aa77869b3476005a5a8720b136d62978bb79e"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/read_back_verifier.c",
+          "sha256": "664276d45b0d7e214fec4137a21d69bfdc6e78c706e3db29b743a8609c627634"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/rpc_format.c",
+          "sha256": "f83f8b8dfe74317886d4626192c645db5a176c6db8b3b2cfd524c89d39e94716"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/rpc_format.h",
+          "sha256": "54a734dc1cebaf98c12771052621be0b1b084e7ac8a46d384397b311b06955f2"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/rpc_response.c",
+          "sha256": "e3a66eae194a7fddffc64943305710f667e1f59863baec83a2b2e11321f4a5d9"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/rpc_response.h",
+          "sha256": "3c8484dbdf80e8569f43d755ac3f87fdbeea9feb463c8dce95b54fc32acf4b92"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/rpc_server.c",
+          "sha256": "300a022298b30ad48735bed1b983fae25c964ecd6069587c341b015d2947fa09"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/sdk_event_barrier.c",
+          "sha256": "21bfa6fbc5f83ee069f1cc788973711ac5c461a6f3d3a56ffb067018bac4a888"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/sdk_event_barrier.h",
+          "sha256": "aad752e1aa18329b251661d164ab7ec7f524e6ee2244e3312d5b46f2e4f8c44b"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/sdk_event_handler.c",
+          "sha256": "92880f95015058ad587a052c4598fe6ee6b8fcca404d1b657d1dcb870d809d9b"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/sdk_executor.c",
+          "sha256": "216801a61b8052bf27ece6acf1efe5a4f73b3521c1d8296eaebd5cb99b9e12ff"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/sdk_init.c",
+          "sha256": "fec4660579e15bd9c73f4ec14b7b950d83b8cd0b375d85d6f94c174a2f6b2434"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/sflow_capture.c",
+          "sha256": "1dbe23895ea84fde833b35dc6b0467622bf2497106664a73c8dcdfa007875fc5"
+        },
+        {
+          "path": "vendor/netlab/sbin/switchd/sflow_capture.h",
+          "sha256": "86cb13744e7bec6c61949d717fe74cd66c0a51b4f6776827e7860661b164748c"
+        },
+        {
+          "path": "vendor/netlab/scripts/check-public-surface.py",
+          "sha256": "be4fbe9a56bb0f7860c9da8209b03a93103dd7e4e67790fec8d54e75befe25db"
+        },
+        {
+          "path": "vendor/netlab/scripts/netlab-port-mode.py",
+          "sha256": "7cbb2a469fb15ad5cb3ef53557c86c43778bea3e4420afdf157a4596ca72adbb"
+        },
+        {
+          "path": "vendor/netlab/scripts/netlab_internal_rpc.py",
+          "sha256": "ac6fbff5754f4812f7fe46d71f5df1b830f7552ad16fce7ca34d5592623e11ba"
+        },
+        {
+          "path": "vendor/netlab/scripts/netlab_ipc_transport.py",
+          "sha256": "36a1f8846b6731b1e5b7a4773eba8e80d35f3010112fc730374e39fd582ed330"
+        },
+        {
+          "path": "vendor/netlab/scripts/netlab_public_capabilities.py",
+          "sha256": "6661bb833860aafcf9dcecc69288b2b88bb23a4c941377dc43d822d0f4a8a745"
+        },
+        {
+          "path": "vendor/netlab/scripts/netlab_runtime_profile.py",
+          "sha256": "bdd0d912b2ff9c1d8b378f7594ad6bfa81456e64c27e5cdb9bb5aaeeb7292665"
+        },
+        {
+          "path": "vendor/netlab/scripts/platform-profile-audit.py",
+          "sha256": "23bb3bae52d053e37fd11715c33f6674de024bf78c649ea28ddcadd701e31705"
+        },
+        {
+          "path": "vendor/netlab/scripts/run-public-tests.py",
+          "sha256": "4b9dde34206eb3d4e77629e1036506b4adab21a82c396724ea1209ed32f52c6f"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/acl_counter_snapshot_test.c",
+          "sha256": "22e5ca5764342d1ae59717bbaf94fa77e7165ebdeed17175af643452ee0931c4"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/build_support.py",
+          "sha256": "73d7c7ca0d7b4595eee0298077c618a2035e997047ed75b0c83fb3f8842ed300"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/l2_plan_staged_client.py",
+          "sha256": "3f23e594e7f52e8bcb7c8cd396e9a72a62679b4a000a6b9258b994a6f539559d"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/rpd_fake_frr_runtime.c",
+          "sha256": "dadf99813ea7f8c74ca1c4b2dbe592a72d084c6496f1a27ac5ef592d610a4a8e"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/rpd_frr_telemetry_scale_test.c",
+          "sha256": "5d15df8243c39a386af01e941e55c7d9a8899a173eb4626acd378247af28cea0"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/rpd_rib_selection_scale_test.c",
+          "sha256": "d0275051d1d77d937437db3e6c64389d5f35a99dbde0f9b1ef1ec58cd5913aa8"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/rpd_static_rib_test.c",
+          "sha256": "a30bb86cd22f77dd7dfccf8f510af7702be6ae6997430b2b1ceafc2a59574984"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_acl_owner_live_authority_test.c",
+          "sha256": "12f467028313d15cdd7fcd30941f204c1810dc1c6e1efdeddb21884a814f10d6"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_board_env_test.c",
+          "sha256": "776d56b34e8df3cc009cf330b8f037f13bf97dfb22c148b962604add19f2ee9b"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_copp_transaction_snapshot_test.c",
+          "sha256": "2c69c45749d513a1483c30fac167cd52068eafdb121876062e0693064ad2f9bc"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_dynamic_fib_incremental_test.c",
+          "sha256": "09579b9b733c4a7d2a45ffc37712191df5dc06654e04c25b52e285567b120491"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_event_publisher_lifecycle_test.c",
+          "sha256": "a979e2562b42e4219fb2426b87020eb639090d158eac341b90d880ea669d0d5d"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_l2_flow_snapshot_test.c",
+          "sha256": "bc225bc52ff5f632d61ceb63c5c215737278edce78a9e8ed7b6c5c87ff66e139"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_l2_persistent_hal_test.c",
+          "sha256": "0be341c74a9c38d1b862979b66fe8892242d6e00d72e93ad6c31c4d414d14f0f"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_mirror_transaction_test.c",
+          "sha256": "fcd28c25e27b2a4e0b47204d5d496d28ae97c625687a5e548905253e93e909e2"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_optics_executor_fairness_test.c",
+          "sha256": "ec23b1a979bc9f7266d8ecd9471a9de0e11df3b365155aa5a1ef68236c71c9b2"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_packet_buffer_chain_test.c",
+          "sha256": "15b16fb471becd4181d917bf522a68bf6f33df24ff0e76d9f4524d91c605de4a"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_port_admin_transaction_test.c",
+          "sha256": "f27825e1d773d400b6ad53f7e56cef22045daf1de36bd7b9d21aa2ee250fa96d"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_presence_readback_test.c",
+          "sha256": "7eaa75b2325ab3df8c0f7a379684bbc59ae72690fb1e2a249380110092fb697f"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_rawsocket_netdev_name_test.c",
+          "sha256": "79e0bdc985a7b9f0da9852af439d1aa345b82345d2f0ba3b515306a23dbccc0b"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_rpd_fib_batch_offline_test.c",
+          "sha256": "d8efd0fc8b9046e2e773f2eaf6ac42cce4b2e699f6100a99629a9949be8e99a9"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_sdk_event_barrier_test.c",
+          "sha256": "9f6de7688397b6ce54eca06d93410d9a84fc84e387d9a210c765a51345f688d0"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_sflow_hal_test.c",
+          "sha256": "3fb60f5828f2c2c63168301658a71b6008331330aec6a9275fdc7aa190590390"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_sflow_stage1_test.c",
+          "sha256": "fb37d63ff2227c7e88f633a2f29b9e91bf841da983bb09f6acfdaae0cf86985e"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_sflow_stage2_test.c",
+          "sha256": "a7a606eb7a38573852c03dc7dc4d7c0f7eaf6ca38c4f16c510a31cbc791c9772"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/switchd_transaction_snapshot_test.c",
+          "sha256": "82f8126c56cb77a7916ce2929cd59022ddbe4c0c5ef4e9da0a178698aeb33367"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_acl_counter_snapshot.py",
+          "sha256": "e3ca9ecad3f05d6f0b511e8b06f5454afceecf4d83fc10151a180c2ea22fc175"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_cli_public_namespace_cleanup.py",
+          "sha256": "be7f52dbc3eea815cc37f645c410a8bd94d736c7f5b10ba2e037656fa4a84e24"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_configd_l2_staged_build.py",
+          "sha256": "b950df91de7e4be54e5ed0cf663c0ab16f42921eba1edba8dceeb4f2d3ce2487"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_configd_l2_test_boundary.py",
+          "sha256": "fca066520e8d90d0dca7debd8c8d2e1d3c7a826797c5bcbc2e4fcea971cecf76"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_configd_l3_build_plan.py",
+          "sha256": "63726e3cba952bc304646c693cc59281ea59551429c9ce0076a73427672e913c"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_configd_public_capabilities.py",
+          "sha256": "22cc67e91075a32ff1edece4fdd99796a89ec445b0e44761b353d02e14836660"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_control_plane_responsiveness_contract.py",
+          "sha256": "40181ae295b4770fd76112d25cca7e54180e9dba1fe3ba0e8c6f24cd5c9d4d32"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_ipc_contract_registry.py",
+          "sha256": "b3401574551cd0896687572a35b2cb673572abdbfa30c82d6df1327cbe37ff72"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_ipc_policy_persistence.py",
+          "sha256": "d69a7aa776e780036a0d9c591dcf9efd606699ad1b80177f0a86e7c09fd94abf"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_ipc_v2.py",
+          "sha256": "019d0f99ad64282dd607e1663aa8bcf1d7c41e54cfb8f63b16db73a15e2c556d"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_l2_plan_build_protocol.py",
+          "sha256": "d033d95ab9be74d6bc7086256ca84192d8fb15f26c6a6065651f54108ec8949b"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_l2_plan_stage.py",
+          "sha256": "8e48d24c096676d1c495ebef55c389c0dff88f17ac824a0b72fa0c778912f166"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_l2d_hw_probe_fail_closed.py",
+          "sha256": "445f9984a855ab8ef675d4aa3f24385b28a7dc360da58c5387040c1cffd4aedc"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_l2d_switchd_reachability.py",
+          "sha256": "7caf0955df55ad56ce28609c8b12108a104c8dcbc14cbd064f081bc20f10b392"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_l3_capacity_contract.py",
+          "sha256": "c8c9b9120a6c399783983f3fd5b3e73199fcb876e806290a5a51e0e30e12df99"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_lacpd_ipc_responsiveness.py",
+          "sha256": "5278f60693de8b1b4f339c0dc1d21ab054e8d791cea1eca94c80d251686abe0e"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_mac_snapshot.py",
+          "sha256": "a7b28ed20c2795f81fd6a7680da8efa22b84058c081b1e85cf99fa83b10ba770"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_rpd_frr_telemetry_scale.py",
+          "sha256": "8a0efdb65c12acb5a5accad399fb814148afce6fa2dc541a81fef9893fc8c858"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_rpd_rib_selection_scale.py",
+          "sha256": "67cb4024d46a4cb3410191bd882d24ad6c674747d4031e1ce9291d2bd00a604d"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_stp_snapshot.py",
+          "sha256": "b81cd97d70dfa1b5f69112a7eddf8ab4ec95f6f1dbaf6a7dafbe74d672784b45"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_switchd_event_publisher_lifecycle.py",
+          "sha256": "933cb4b7e46ae276630dae52bb88ad77266c0a2f45e15eb3aba7613624477446"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_switchd_l2_plan_storage.py",
+          "sha256": "fd22c67a448c9fc2d6adf573dd4b4def6aee09e3e97ebc8545d93dbdf33795ea"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_switchd_l3_owner_storage.py",
+          "sha256": "1cfe6621394e340972fc8231f8b29ea0e5d98431396c9c5f324a8b987f6c21ec"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_switchd_optics_executor_fairness.py",
+          "sha256": "5787ca00f0b61046147f645623b82fb97f1de3d7fb44b2d391407e44f7dd7a09"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_switchd_presence_readback.py",
+          "sha256": "bd238fdc4b87de6441fc2e4093a92f8d06b9a99622b55b507d2670bbc7402923"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_switchd_rpd_fib_snapshot.py",
+          "sha256": "cc0da0ff7ebfa3617c05ebc213696555d53d34bd34155bf2bd0691519e26cf7a"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_switchd_sdk_event_barrier.py",
+          "sha256": "f4ab7fe140ea68595cade422cc9da64203a1c1edaab87290b751bdb64da5dbed"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_switchd_sflow_hal.py",
+          "sha256": "d705360d8272f509df219eab2aae09fac33bc825c8f4a67e7b20627049e1c1bd"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_switchd_sflow_stage1.py",
+          "sha256": "857a65cf48c7e7857931b63ef80149f0fd0774862a50d722eb9d51671465e80c"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_switchd_sflow_stage2.py",
+          "sha256": "12f3c6afa7ec98678056aa9b01f76a9dfafd837b7ba6882c87a6c62d198c1a97"
+        },
+        {
+          "path": "vendor/netlab/tests/integration/test_yang_xml_cache.py",
+          "sha256": "563626cb4649a95a7b94cfc3de4dcd15d339e8b40579ab8c113d4cdfb90d8e44"
+        },
+        {
+          "path": "vendor/netlab/tools/daemon-launch/Makefile",
+          "sha256": "276785860f8b266331ce140066c3b752a484ec007d1f279c6f1a4b3c4e1529bd"
+        },
+        {
+          "path": "vendor/netlab/tools/daemon-launch/main.c",
+          "sha256": "848fde9beb64e836364298988626514b5160445d9ba1cc979bf5f1e596e2ced7"
+        },
+        {
+          "path": "vendor/netlab/tools/internal-rpc/Makefile",
+          "sha256": "9269a75aff8644f29fcc6b28c7cfccf0692b3c9f21e50e0c40561f9c073b5883"
+        },
+        {
+          "path": "vendor/netlab/tools/internal-rpc/main.c",
+          "sha256": "51c5046d89fed7c1b2b387049594be6d8b64ce842e40c8dd5546ee5894d85276"
+        },
+        {
+          "path": "vendor/netlab/tools/l3-ownerctl/Makefile",
+          "sha256": "85b654d76d5d6af913e27916efc7e4b8ab760cfea5366efb3f9a345a3a88d3bc"
+        },
+        {
+          "path": "vendor/netlab/tools/l3-ownerctl/main.c",
+          "sha256": "e8942ad3678abc9993b27230a43a3fa3945065a7cb3067b06b95c48cf027c4d7"
+        }
+      ],
+      "upstream": "https://github.com/netlab-switch/netlab-os",
+      "license": "Apache-2.0"
+    },
+    {
+      "archive": "pe31625g24dira-switch-stack-main.zip",
+      "sha256": "a65b2e1cba7bbce192e245a1db237bf064440aad3224629abe6d25e37654bc12",
+      "files": [
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/Makefile",
+          "sha256": "1a6c11e32fedb4def3a2a70b9b1ce23e59d8f21842ad9f5a35e8839a28f3795c"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/dkms.conf",
+          "sha256": "32a90531d30b2cf6b006ca707d1aaf30baac10c6ca2c7988e582dea6cfdd9194"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k.h",
+          "sha256": "245d182f695496c14f1dc21452af66ea6414981a49f1a911b30b6e1585f69f3b"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_common.c",
+          "sha256": "393e1138dda7db2df84ad90d4df488dcff68497507af66a0b553193f374d621f"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_common.h",
+          "sha256": "a8fe40efd9f4885956f47d266858681cc9deccc661b36cdb333247c521f2c38c"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_dcbnl.c",
+          "sha256": "c520e1fa078a09ccfa9573bcb5fecb2a98f8b8558369d19eb4269c38946c6435"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_debugfs.c",
+          "sha256": "957ec8b6ee152303f082694cbb526f0f6f728f3ab4b2f3b0dcf7245edab4a9d9"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_ethtool.c",
+          "sha256": "5fafcb20ca436571139e2144b466efd5cebbbdddad22061cbe1f58a968e93e17"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_ies.c",
+          "sha256": "ff93007f49b960697d7bdc4252b385d3d3132193c77a0fe68d0435241c1618bc"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_iov.c",
+          "sha256": "c8393dc7a3d9d08cb1f43232a6e40ecacc69f711942005c762415ec746352532"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_main.c",
+          "sha256": "a7381642b2cd4fd08da9aee0048a32f56d3089c0e6d1d881b5c50aee472669fd"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_mbx.c",
+          "sha256": "f0ee202f87f802744ea52340275f490e44e72ece1d147863b81f41c3c076f89e"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_mbx.h",
+          "sha256": "246b50c2fbb830acdd16ae536486a969b5f3aaef6ec594c25a9d4635fbc9b45a"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_netdev.c",
+          "sha256": "279b44efab43361e6af84fc52de6755fec49415dccf850e89645f538ebb0d148"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_pci.c",
+          "sha256": "091d1ba4c150fdd58f7610da354fe217bfb4f25e8c658c18eca435fa92956933"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_pf.c",
+          "sha256": "75b6de4564aaac63959a6349e3d6cefb3b87208132b56a00677e159a46eb10b7"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_pf.h",
+          "sha256": "cc66b8940523156042cf4d6a4973ce7bb93ee2cf664393410f7c80678ac5daae"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_tlv.c",
+          "sha256": "79f5899b40822b7e7e0b6716aa0cc5a1d60bf846b9b42832d713de9e19277445"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_tlv.h",
+          "sha256": "2066ea975ba83209c1cb4bd35e14eb6e346d3505a23586d3a1d2c0c2ac66f2d2"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_type.h",
+          "sha256": "bfd3ec288da388ef6ed5ec235d92430ae13b176a6895564debf87f1bb2df1597"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_uio.c",
+          "sha256": "3ef62d49c0ba8345d1d211ce31e4d933a7a300d7ba5c414d7b241875e622ac3a"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_vf.c",
+          "sha256": "18db030112a014a55c76bde4caf054c0b2fec53218af0ca9ed06810a2f6eb28f"
+        },
+        {
+          "path": "hardware/reference/driver/fm10k-uio-6.12.101-ies2/fm10k_vf.h",
+          "sha256": "6fec19016a6658c124a9704added28236cb51eac2e73a6f3c1a514986713f881"
+        }
+      ],
+      "upstream": "https://github.com/Sakana-bot/pe31625g24dira-switch-stack",
+      "license": "GPL-2.0-only for the retained Linux driver; see per-file headers and COPYING"
+    }
+  ],
+  "hash_scope": "Original imported file bytes, before project modifications; not hashes of the current working tree.",
+  "external_inputs": [
+    {
+      "id": "sil001-hw4-b0",
+      "path": "hardware/sdk/platforms/sil001-hw4-b0.cfg",
+      "sha256": "38c481b5d8035df14bc517735cd8e1c1ba9936fdc512fd18c849878fe323da98",
+      "distribution": "Not bundled; supplied separately by the operator with appropriate rights."
+    },
+    {
+      "id": "sil001-hw5-a11",
+      "path": "hardware/sdk/platforms/sil001-hw5-a11.cfg",
+      "sha256": "8f5c1700c48984d539ff526f4a4ba18c814db27282de2afe33c90a2888c87d96",
+      "distribution": "Not bundled; supplied separately by the operator with appropriate rights."
+    },
+    {
+      "id": "ies-sdk",
+      "manifest": "hardware/sdk-inputs.json",
+      "distribution": "Proprietary; not included or licensed by this repository."
+    },
+    {
+      "id": "eye-firmware",
+      "manifest": "hardware/eye-firmware.json",
+      "distribution": "Separately licensed; not included or licensed by this repository."
+    }
+  ]
+}

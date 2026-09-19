@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+if [ "$1" = remove ] && [ -d /run/systemd/system ]; then
+    deb-systemd-invoke stop fm10k-panel.service || true
+    deb-systemd-invoke stop fm10k-time.socket || true
+fi
+exit 0

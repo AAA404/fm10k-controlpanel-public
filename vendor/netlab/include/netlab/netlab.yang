@@ -1,0 +1,2308 @@
+// Modified for fm10k-controlpanel; original import digests are in SOURCE_MANIFEST.json.
+module netlab {
+    yang-version 1.1;
+    namespace "urn:netlab:config";
+    prefix nl;
+
+    revision 2026-09-07 {
+        description "FM10K panel canonical intent, fixed slots and board extension";
+    }
+
+    revision 2026-07-13 {
+        description "Physical routed interface V1 and current persistent L3 owner descriptions";
+    }
+
+    revision 2026-07-12 {
+        description "Hardware-backed local port mirroring (SPAN) V1";
+    }
+
+    revision 2026-05-12 {
+        description "Hardware-backed L2 configuration model";
+    }
+
+    typedef vlan-id-type {
+        type uint16 {
+            range "1..4094";
+        }
+    }
+
+    typedef vlan-name-type {
+        type string {
+            pattern '[A-Za-z][A-Za-z0-9_.-]{0,63}';
+        }
+    }
+
+    typedef ifname-type {
+        type string {
+            pattern '([a-z]+-[0-9]+/[0-9]+/[0-9]+([:][0-9]+)?)|(ae[0-9]+)';
+        }
+    }
+
+    typedef l3-rif-name-type {
+        type string {
+            pattern '[A-Za-z][A-Za-z0-9_./:-]{0,63}';
+        }
+        description
+            "Layer-3 routed interface owner name, for example vlan100, irb.100, or et-0/0/0.0.";
+    }
+
+    typedef mac-address-type {
+        type string {
+            pattern '([0-9a-fA-F]{2}:){5}[0-9a-fA-F]{2}';
+        }
+    }
+
+    typedef interface-mode-type {
+        type enumeration {
+            enum access;
+            enum trunk;
+        }
+    }
+
+    typedef lacp-mode-type {
+        type enumeration {
+            enum active;
+            enum passive;
+        }
+    }
+
+    typedef lacp-periodic-type {
+        type enumeration {
+            enum fast;
+            enum slow;
+        }
+    }
+
+    typedef cos-trust-mode-type {
+        type enumeration {
+            enum none;
+            enum ieee-802.1p;
+            enum dscp;
+        }
+    }
+
+    typedef cos-pfc-class-mask-type {
+        type uint8 {
+            range "0..255";
+        }
+        description
+            "Bit mask of PFC traffic classes 0..7.";
+    }
+
+    typedef cos-smp-mask-type {
+        type uint8 {
+            range "0..3";
+        }
+        description
+            "FM10000 shared-memory partition mask, bit 0 for SMP0 and bit 1 for SMP1.";
+    }
+
+    typedef port-mode-type {
+        type enumeration {
+            enum "24x10g";
+            enum "24x25g";
+            enum "12x25g-12x10g";
+            enum "12x10g-3x40g";
+            enum "12x25g-3x100g";
+            enum "6x40g";
+            enum "6x100g";
+        }
+        description
+            "Restart-time fixed FM10840 front-panel lane shape. A capable one-lane profile can permit persistent 10G/25G per-port mode changes without changing this shape. AUTODETECT remains outside the model.";
+    }
+
+    typedef network-services-type {
+        type enumeration {
+            enum l2;
+            enum l3;
+        }
+        description
+            "Restart-time forwarding resource allocation profile.";
+    }
+
+    container netlab-config {
+        must "count(routing-options/static/arp) + count(routing-instances/instance/routing-options/static/arp) <= 256" {
+            error-message
+                "persistent L3 ARP entries across inet.0 and VRF V1 exceed the switchd owner capacity of 256";
+        }
+        must "count(routing-options/static/next-hop) + count(routing-instances/instance/routing-options/static/next-hop) <= 256" {
+            error-message
+                "persistent L3 next hops across inet.0 and VRF V1 exceed the switchd owner capacity of 256";
+        }
+        must "count(routing-options/static/ecmp) + count(routing-instances/instance/routing-options/static/ecmp) <= 128" {
+            error-message
+                "persistent L3 ECMP groups across inet.0 and VRF V1 exceed the switchd owner capacity of 128";
+        }
+        must "count(routing-options/static/route) + count(routing-instances/instance/routing-options/static/route) <= 1024" {
+            error-message
+                "persistent L3 routes across inet.0 and VRF V1 exceed the switchd owner capacity of 1024";
+        }
+        must "count(protocols/ospf/area/interface) <= 128" {
+            error-message
+                "OSPF interfaces exceed the rpd intent capacity of 128";
+        }
+        must "count(protocols/bgp/group/neighbor) <= 64" {
+            error-message
+                "BGP neighbors exceed the rpd intent capacity of 64";
+        }
+        must "count(policy-options/policy-statement/term) <= 64" {
+            error-message
+                "routing policy terms exceed the rpd intent capacity of 64";
+        }
+        container system {
+            description
+                "System management identity configuration.";
+            leaf host-name {
+                type string {
+                    length "1..63";
+                    pattern '[A-Za-z0-9][A-Za-z0-9.-]{0,62}';
+                }
+                description
+                    "Configured system host name displayed by the CLI and show system.";
+            }
+            leaf domain-name {
+                type string {
+                    length "1..253";
+                }
+                description
+                    "Default DNS search domain for management services.";
+            }
+            list name-server {
+                key "address";
+                description
+                    "Management DNS resolver addresses.";
+                leaf address {
+                    type string {
+                        length "1..255";
+                    }
+                }
+            }
+            container authentication-order {
+                list method {
+                    key "name";
+                    leaf name {
+                        type enumeration {
+                            enum password;
+                            enum radius;
+                            enum tacplus;
+                        }
+                    }
+                }
+            }
+            list radius-server {
+                key "address";
+                leaf address {
+                    type string {
+                        length "1..255";
+                    }
+                }
+                leaf secret {
+                    type string {
+                        length "1..255";
+                    }
+                }
+                leaf port {
+                    type uint16 {
+                        range "1..65535";
+                    }
+                    default "1812";
+                }
+                leaf source-address {
+                    type string {
+                        length "1..255";
+                    }
+                }
+                leaf timeout {
+                    type uint16 {
+                        range "1..1000";
+                    }
+                }
+                leaf retry {
+                    type uint8 {
+                        range "1..100";
+                    }
+                }
+            }
+            list tacplus-server {
+                key "address";
+                leaf address {
+                    type string {
+                        length "1..255";
+                    }
+                }
+                leaf secret {
+                    type string {
+                        length "1..255";
+                    }
+                }
+                leaf port {
+                    type uint16 {
+                        range "1..65535";
+                    }
+                    default "49";
+                }
+                leaf source-address {
+                    type string {
+                        length "1..255";
+                    }
+                }
+                leaf timeout {
+                    type uint16 {
+                        range "1..1000";
+                    }
+                }
+                leaf single-connection {
+                    type boolean;
+                    default "false";
+                }
+            }
+            container services {
+                description
+                    "Management protocol service intent.";
+                container ssh {
+                    leaf enable {
+                        type boolean;
+                        default "false";
+                    }
+                    leaf root-login {
+                        type enumeration {
+                            enum allow;
+                            enum deny;
+                            enum deny-password;
+                        }
+                    }
+                }
+                container netconf {
+                    leaf ssh {
+                        type boolean;
+                        default "false";
+                    }
+                }
+                container restconf {
+                    leaf https {
+                        type boolean;
+                        default "false";
+                    }
+                }
+                container gnmi {
+                    leaf grpc {
+                        type boolean;
+                        default "false";
+                    }
+                    leaf port {
+                        type uint16 {
+                            range "1..65535";
+                        }
+                        default "57400";
+                    }
+                }
+            }
+            container ntp {
+                list server {
+                    key "address";
+                    leaf address {
+                        type string {
+                            length "1..255";
+                        }
+                    }
+                    leaf prefer {
+                        type boolean;
+                        default "false";
+                    }
+                }
+            }
+            container syslog {
+                list host {
+                    key "name";
+                    leaf name {
+                        type string {
+                            length "1..255";
+                        }
+                    }
+                    leaf any {
+                        type string {
+                            length "1..32";
+                        }
+                    }
+                }
+                list file {
+                    key "name";
+                    leaf name {
+                        type string {
+                            length "1..127";
+                        }
+                    }
+                    leaf any {
+                        type string {
+                            length "1..32";
+                        }
+                    }
+                }
+            }
+            container login {
+                list user {
+                    key "name";
+                    leaf name {
+                        type string {
+                            length "1..64";
+                        }
+                    }
+                    leaf class {
+                        type enumeration {
+                            enum super-user;
+                            enum operator;
+                            enum read-only;
+                        }
+                    }
+                    container authentication {
+                        leaf encrypted-password {
+                            type string {
+                                length "1..255";
+                            }
+                        }
+                        leaf ssh-rsa {
+                            type string {
+                                length "1..4096";
+                            }
+                        }
+                    }
+                }
+            }
+            container accounting {
+                container events {
+                    list event {
+                        key "name";
+                        leaf name {
+                            type enumeration {
+                                enum login;
+                                enum change-log;
+                                enum interactive-commands;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        container snmp {
+            description
+                "SNMP management protocol configuration intent.";
+            leaf contact {
+                type string {
+                    length "1..255";
+                }
+            }
+            leaf location {
+                type string {
+                    length "1..255";
+                }
+            }
+            list community {
+                key "name";
+                leaf name {
+                    type string {
+                        length "1..64";
+                    }
+                }
+                leaf authorization {
+                    type enumeration {
+                        enum read-only;
+                        enum read-write;
+                    }
+                }
+                list clients {
+                    key "address";
+                    leaf address {
+                        type string {
+                            length "1..255";
+                        }
+                    }
+                }
+            }
+            list trap-group {
+                key "name";
+                leaf name {
+                    type string {
+                        length "1..64";
+                    }
+                }
+                leaf version {
+                    type enumeration {
+                        enum v2;
+                    }
+                    default "v2";
+                }
+                list targets {
+                    key "address";
+                    leaf address {
+                        type string {
+                            length "1..255";
+                        }
+                    }
+                }
+            }
+        }
+
+        container chassis {
+            container fm10k-panel {
+                presence "Reserve the canonical configuration for the versioned panel API.";
+                leaf profile { type enumeration { enum sil001-hw4-b0; enum sil001-hw5-a11; } mandatory true; }
+                leaf schema-version { type uint8 { range "1"; } mandatory true; }
+                leaf job-id { type string { pattern '[0-9a-f]{32}'; } mandatory true; }
+                leaf intent {
+                    type string { length "1..131072"; }
+                    mandatory true;
+                    description "Lossless UI projection in the same immutable configd snapshot.";
+                }
+                list port-group {
+                    key "epl";
+                    min-elements 6;
+                    max-elements 6;
+                    leaf epl { type uint8 { range "0..2 | 5..7"; } }
+                    leaf mode { type enumeration { enum "100g"; enum "40g"; enum split; } mandatory true; }
+                    list lane {
+                        key "index"; min-elements 4; max-elements 4;
+                        leaf index { type uint8 { range "0..3"; } }
+                        leaf speed { type uint8 { range "10 | 25"; } mandatory true; }
+                    }
+                }
+                container fan {
+                    leaf sensor { type enumeration { enum fm10840_core; } mandatory true; }
+                    leaf idle-temperature-c { type uint8 { range "10..80"; } mandatory true; }
+                    leaf load-temperature-c { type uint8 { range "20..90"; } mandatory true; }
+                    leaf critical-temperature-c { type uint8 { range "30..100"; } mandatory true; }
+                    leaf idle-speed-percent { type uint8 { range "25..100"; } mandatory true; }
+                    leaf load-speed-percent { type uint8 { range "25..100"; } mandatory true; }
+                    leaf hysteresis-c { type uint8 { range "1..15"; } mandatory true; }
+                    leaf response-time-s {
+                        type decimal64 { fraction-digits 2; }
+                        must ". = 5.45 or . = 10.9 or . = 21.6 or . = 43.7";
+                        mandatory true;
+                    }
+                    must "load-temperature-c >= idle-temperature-c + 10";
+                    must "critical-temperature-c > load-temperature-c";
+                    must "load-speed-percent >= idle-speed-percent";
+                }
+            }
+            description
+                "Chassis-level restart-time hardware profile intent.";
+            leaf port-mode {
+                type port-mode-type;
+                description
+                    "Desired fixed port shape. This is staged by commit and takes effect only after a chassis mode apply and switch stack restart.";
+            }
+            leaf network-services {
+                type network-services-type;
+                description
+                    "Desired L2/L3 resource allocation. L3 requires an active L3 chassis mode with route slices and ROUTE-capable external ports.";
+            }
+        }
+
+        container vlans {
+            list vlan {
+                key "name";
+                max-elements 4094;
+                leaf name {
+                    type vlan-name-type;
+                }
+                leaf vlan-id {
+                    type vlan-id-type;
+                    mandatory true;
+                }
+                leaf description {
+                    type string {
+                        length "0..255";
+                    }
+                }
+            }
+        }
+
+        container interfaces {
+            list interface {
+                key "name";
+                max-elements 128;
+                leaf name {
+                    type ifname-type;
+                }
+                leaf description {
+                    type string {
+                        length "0..255";
+                    }
+                }
+                leaf disable {
+                    type boolean;
+                    default false;
+                }
+                leaf mtu {
+                    type uint16 {
+                        range "1514..9216";
+                    }
+                }
+                leaf speed {
+                    type enumeration {
+                        enum 10g {
+                            description "10-Gigabit Ethernet, fixed 10GBase-SR mode.";
+                        }
+                        enum 25g {
+                            description "25-Gigabit Ethernet, fixed 25GBase-SR mode.";
+                        }
+                    }
+                    description
+                        "Persistent physical interface speed. The active platform profile and SDK RDI must advertise the selected speed. Deleting this leaf restores the platform default speed.";
+                }
+                leaf native-vlan-id {
+                    type vlan-id-type;
+                }
+                container fm10k-port {
+                    leaf ingress-filtering { type boolean; default true; }
+                    leaf direct-receiver { type boolean; default false; }
+                    leaf broadcast-kbps { type uint32 { range "0 | 22000..100000000"; } default 0; }
+                    leaf multicast-kbps { type uint32 { range "0 | 22000..100000000"; } default 0; }
+                    leaf unknown-unicast-kbps { type uint32 { range "0 | 22000..100000000"; } default 0; }
+                }
+                container ether-options {
+                    leaf ieee8023ad {
+                        type string {
+                            pattern 'ae[0-9]+';
+                        }
+                    }
+                    container lacp {
+                        leaf port-priority {
+                            type uint16 {
+                                range "1..65535";
+                            }
+                        }
+                    }
+                }
+                container aggregated-ether-options {
+                    leaf static {
+                        type boolean;
+                        default false;
+                        must ". = 'false' or not(../lacp/mode)";
+                        description "Static LAG membership; no LACP PDUs are sent or accepted.";
+                    }
+                    leaf minimum-links {
+                        type uint8 {
+                            range "1..16";
+                        }
+                    }
+                    container hash-policy {
+                        leaf rotation {
+                            type enumeration {
+                                enum a;
+                                enum b;
+                            }
+                            default a;
+                        }
+                    }
+                    container lacp {
+                        leaf mode {
+                            type lacp-mode-type;
+                        }
+                        leaf actor-key {
+                            type uint16 {
+                                range "1..65535";
+                            }
+                            description
+                                "LACP actor operational key advertised for this aggregate.";
+                        }
+                        leaf periodic {
+                            type lacp-periodic-type;
+                            default slow;
+                        }
+                    }
+                }
+                container unit {
+                    list logical-unit {
+                        key "unit-id";
+                        leaf unit-id {
+                            type uint32;
+                        }
+                        container family {
+                            container ethernet-switching {
+                                leaf interface-mode {
+                                    type interface-mode-type;
+                                }
+                                leaf-list vlan-members {
+                                    type string;
+                                    max-elements 64;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        container interfaces-routing {
+            description
+                "Internal L3 routed-interface candidate model compiled from public IRB and physical routed-interface configuration.";
+            list interface {
+                key "name";
+                max-elements 64;
+                leaf name {
+                    type l3-rif-name-type;
+                }
+                leaf vlan {
+                    type vlan-id-type;
+                    description
+                        "VLAN backed by this routed interface. Configd infers IRB VLANs from vlan<N> or irb.<N> names and allocates collision-checked internal VLANs for physical routed ports.";
+                }
+                leaf address {
+                    type string {
+                        pattern '([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])';
+                    }
+                    mandatory true;
+                    description
+                        "IPv4 address and prefix length owned by this routed interface.";
+                }
+            }
+        }
+
+        container routing-options {
+            description
+                "Public IPv4 inet.0 routing candidate model. On an L3 chassis profile, configd commits through the persistent switchd SDK owner with live apply, read-back verification, and rollback; L2 profiles remain fail closed.";
+            leaf autonomous-system {
+                type uint32 {
+                    range "1..4294967295";
+                }
+                description
+                    "Local autonomous system used by the bounded IPv4 BGP runtime.";
+            }
+            container static {
+                list arp {
+                    key "ip";
+                    max-elements 256;
+                    leaf ip {
+                        type string {
+                            pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                        }
+                    }
+                    leaf mac {
+                        type mac-address-type;
+                        mandatory true;
+                    }
+                    leaf interface {
+                        type l3-rif-name-type;
+                        mandatory true;
+                    }
+                    leaf egress-interface {
+                        type ifname-type;
+                        description
+                            "Optional physical egress port used to bind the next-hop MAC owner.";
+                    }
+                }
+                list next-hop {
+                    key "id";
+                    max-elements 256;
+                    leaf id {
+                        type uint32 {
+                            range "1..65535";
+                        }
+                    }
+                    leaf arp-ip {
+                        type string {
+                            pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                        }
+                        mandatory true;
+                        description
+                            "Referenced static ARP IPv4 address.";
+                    }
+                    leaf interface {
+                        type l3-rif-name-type;
+                        mandatory true;
+                    }
+                }
+                list ecmp {
+                    key "id";
+                    max-elements 128;
+                    leaf id {
+                        type uint32 {
+                            range "1..65535";
+                        }
+                    }
+                    leaf-list member {
+                        type uint32 {
+                            range "1..65535";
+                        }
+                        min-elements 1;
+                        max-elements 32;
+                        description
+                            "Next-hop id included in this ECMP group.";
+                    }
+                }
+                list route {
+                    key "prefix";
+                    max-elements 1024;
+                    leaf prefix {
+                        type string {
+                            pattern '([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])';
+                        }
+                    }
+                    choice route-target {
+                        mandatory true;
+                        leaf-list next-hop-address {
+                            type string {
+                                pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                            }
+                            max-elements 16;
+                            description
+                                "Public static route next-hop IPv4 address compiled to an internal next-hop owner. Multiple entries compile to an internal ECMP owner.";
+                        }
+                        leaf next-hop-id {
+                            type uint32 {
+                                range "1..65535";
+                            }
+                            description
+                                "Referenced static next-hop id.";
+                        }
+                        leaf ecmp-id {
+                            type uint32 {
+                                range "1..65535";
+                            }
+                            description
+                                "Referenced static ECMP group id.";
+                        }
+                    }
+                }
+            }
+        }
+
+        container routing-instances {
+            description
+                "VRF V1 candidate model. Exactly one additional IPv4 virtual router is supported alongside inet.0; dynamic protocols, IPv6, route-table sharing, multicast routing, and PBR remain out of scope.";
+            list instance {
+                key "name";
+                max-elements 1;
+                leaf name {
+                    type vlan-name-type;
+                }
+                leaf instance-type {
+                    type enumeration {
+                        enum vrf;
+                    }
+                    mandatory true;
+                }
+                leaf virtual-router-id {
+                    type uint8 {
+                        range "1";
+                    }
+                    default 1;
+                    description
+                        "Fixed FM10000 virtual-router identifier for VRF V1.";
+                }
+                leaf kernel-table {
+                    type uint32 {
+                        range "1001";
+                    }
+                    default 1001;
+                    description
+                        "Fixed Linux/FPM route-table identifier for VRF V1.";
+                }
+                leaf-list interface {
+                    type l3-rif-name-type;
+                    max-elements 8;
+                    description
+                        "Existing routed interface assigned exclusively to this VRF.";
+                }
+                container routing-options {
+                    container static {
+                        list arp {
+                            key "ip";
+                            max-elements 256;
+                            leaf ip {
+                                type string {
+                                    pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                                }
+                            }
+                            leaf mac {
+                                type mac-address-type;
+                                mandatory true;
+                            }
+                            leaf interface {
+                                type l3-rif-name-type;
+                                mandatory true;
+                            }
+                            leaf egress-interface {
+                                type ifname-type;
+                            }
+                        }
+                        list next-hop {
+                            key "id";
+                            max-elements 256;
+                            leaf id {
+                                type uint32 {
+                                    range "1..65535";
+                                }
+                            }
+                            leaf arp-ip {
+                                type string {
+                                    pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                                }
+                                mandatory true;
+                            }
+                            leaf interface {
+                                type l3-rif-name-type;
+                                mandatory true;
+                            }
+                        }
+                        list ecmp {
+                            key "id";
+                            max-elements 128;
+                            leaf id {
+                                type uint32 {
+                                    range "1..65535";
+                                }
+                            }
+                            leaf-list member {
+                                type uint32 {
+                                    range "1..65535";
+                                }
+                                min-elements 1;
+                                max-elements 32;
+                            }
+                        }
+                        list route {
+                            key "prefix";
+                            max-elements 1024;
+                            leaf prefix {
+                                type string {
+                                    pattern '([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])';
+                                }
+                            }
+                            choice route-target {
+                                mandatory true;
+                                leaf-list next-hop-address {
+                                    type string {
+                                        pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                                    }
+                                    max-elements 16;
+                                }
+                                leaf next-hop-id {
+                                    type uint32 {
+                                        range "1..65535";
+                                    }
+                                }
+                                leaf ecmp-id {
+                                    type uint32 {
+                                        range "1..65535";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        container forwarding-options {
+            container port-mirroring {
+                description
+                    "Local SPAN V1. One hardware-backed session is supported.";
+                list instance {
+                    key "name";
+                    max-elements 1;
+                    leaf name {
+                        type vlan-name-type;
+                    }
+                    container output {
+                        presence "Configure the local mirror destination.";
+                        leaf interface {
+                            type ifname-type;
+                            mandatory true;
+                            description
+                                "Physical front-panel destination interface.";
+                        }
+                    }
+                    container input {
+                        list interface {
+                            key "name";
+                            min-elements 1;
+                            max-elements 32;
+                            leaf name {
+                                type ifname-type;
+                            }
+                            leaf direction {
+                                type enumeration {
+                                    enum ingress;
+                                    enum egress;
+                                    enum both;
+                                }
+                                default ingress;
+                            }
+                        }
+                    }
+                    must "output/interface" {
+                        error-message
+                            "port-mirroring requires an output interface";
+                    }
+                    must "input/interface" {
+                        error-message
+                            "port-mirroring requires at least one input interface";
+                    }
+                }
+            }
+        }
+
+        container policy-options {
+            description
+                "Minimal route policy model for BGP export policy.";
+            list policy-statement {
+                key "name";
+                max-elements 64;
+                leaf name {
+                    type vlan-name-type;
+                }
+                list term {
+                    key "name";
+                    max-elements 64;
+                    leaf name {
+                        type vlan-name-type;
+                    }
+                    container from {
+                        list route-filter {
+                            key "prefix";
+                            max-elements 64;
+                            leaf prefix {
+                                type string {
+                                    pattern '([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])';
+                                }
+                            }
+                            leaf match-type {
+                                type enumeration {
+                                    enum exact;
+                                }
+                                default exact;
+                            }
+                        }
+                    }
+                    container then {
+                        leaf action {
+                            type enumeration {
+                                enum accept;
+                                enum reject;
+                            }
+                            mandatory true;
+                        }
+                    }
+                }
+            }
+        }
+
+        container protocols {
+            container ospf {
+                list area {
+                    key "name";
+                    max-elements 32;
+                    leaf name {
+                        type string {
+                            length "1..15";
+                        }
+                    }
+                    list interface {
+                        key "name";
+                        max-elements 128;
+                        leaf name {
+                            type string {
+                                length "1..64";
+                            }
+                            description
+                                "Junos-style routed interface name, for example irb.100 or et-0/0/0.0.";
+                        }
+                    }
+                }
+            }
+            container bgp {
+                list group {
+                    key "name";
+                    max-elements 32;
+                    leaf name {
+                        type vlan-name-type;
+                    }
+                    leaf type {
+                        type enumeration {
+                            enum internal;
+                            enum external;
+                        }
+                        mandatory true;
+                    }
+                    leaf export {
+                        type vlan-name-type;
+                        description
+                            "Export policy-statement name.";
+                    }
+                    leaf hold-time {
+                        type uint16 {
+                            range "3..3600";
+                        }
+                        must ". mod 3 = 0" {
+                            error-message
+                                "BGP hold-time must be divisible by 3.";
+                        }
+                        description
+                            "BGP hold time in seconds; keepalive is one third "
+                          + "of this value.";
+                    }
+                    list neighbor {
+                        key "address";
+                        max-elements 64;
+                        leaf address {
+                            type string {
+                                pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                            }
+                        }
+                        leaf peer-as {
+                            type uint32 {
+                                range "1..4294967295";
+                            }
+                            mandatory true;
+                        }
+                    }
+                }
+            }
+            container lldp {
+                leaf disable {
+                    type boolean;
+                    default false;
+                }
+                leaf transmit-interval {
+                    type uint16 {
+                        range "5..3600";
+                    }
+                    default 30;
+                }
+                leaf hold-multiplier {
+                    type uint8 {
+                        range "2..10";
+                    }
+                    default 4;
+                }
+                leaf system-name {
+                    type string {
+                        length "0..64";
+                    }
+                }
+                leaf system-description {
+                    type string {
+                        length "0..191";
+                    }
+                }
+                leaf management-address {
+                    type string {
+                        length "1..64";
+                    }
+                }
+                list interface {
+                    key "name";
+                    max-elements 128;
+                    leaf name {
+                        type ifname-type;
+                    }
+                    leaf disable {
+                        type boolean;
+                        default false;
+                    }
+                    container dcbx {
+                        presence "Advertise the local IEEE 802.1Qaz policy. Peer policy never changes the configuration.";
+                        leaf enabled { type boolean; mandatory true; }
+                        leaf pfc-mask { type uint8; mandatory true; }
+                        leaf priority-map { type string { pattern '[0-7]( [0-7]){7}'; } mandatory true; }
+                        leaf bandwidth { type string { pattern '[0-9]{1,3}( [0-9]{1,3}){7}'; } mandatory true; }
+                        leaf tsa-map { type string { pattern '[02]( [02]){7}'; } mandatory true; }
+                        list application {
+                            key "selector protocol priority";
+                            max-elements 32;
+                            leaf selector { type uint8 { range "1..5"; } }
+                            leaf protocol { type uint16; }
+                            leaf priority { type uint8 { range "0..7"; } }
+                        }
+                    }
+                }
+            }
+            container igmp-snooping {
+                presence "Enable IPv4 IGMP snooping.";
+                description
+                    "IPv4 IGMPv1/v2 snooping for configured bridge VLANs, with an external querier. Leave retains membership until aging unless fast-leave and a directly connected receiver are both explicitly configured. IPv6 MLD and Layer 3 multicast are outside V1 scope.";
+                leaf membership-timeout {
+                    type uint16 {
+                        range "10..3600";
+                    }
+                    default 260;
+                    units "seconds";
+                }
+                list vlan {
+                    key "name";
+                    max-elements 256;
+                    leaf name {
+                        type vlan-name-type;
+                    }
+                    list interface {
+                        key "name";
+                        max-elements 128;
+                        leaf name {
+                            type ifname-type;
+                        }
+                        leaf-list static-group {
+                            max-elements 32;
+                            type string {
+                                pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                            }
+                            description
+                                "IPv4 multicast group joined statically on this physical VLAN member.";
+                        }
+                        leaf mrouter { type boolean; default false; }
+                        leaf fast-leave {
+                            type boolean;
+                            default false;
+                            description "Enable only for a validated directly connected receiver.";
+                        }
+                    }
+                }
+            }
+            container rstp {
+                leaf bridge-priority {
+                    type uint16 {
+                        range "0..61440";
+                    }
+                }
+                leaf hello-time {
+                    type uint8 {
+                        range "1..10";
+                    }
+                }
+                leaf max-age {
+                    type uint8 {
+                        range "6..40";
+                    }
+                }
+                leaf forward-delay {
+                    type uint8 {
+                        range "4..30";
+                    }
+                }
+                list interface {
+                    key "name";
+                    max-elements 128;
+                    leaf name {
+                        type ifname-type;
+                    }
+                    leaf edge {
+                        type boolean;
+                        default false;
+                    }
+                    leaf bpdu-block-on-edge {
+                        type boolean;
+                        default false;
+                    }
+                    leaf root-protection {
+                        type boolean;
+                        default false;
+                    }
+                    leaf loop-protection {
+                        type boolean;
+                        default false;
+                    }
+                    leaf path-cost {
+                        type uint32 {
+                            range "1..200000000";
+                        }
+                        description
+                            "RSTP administrative path cost used in priority-vector comparison.";
+                    }
+                    leaf port-priority {
+                        type uint8 {
+                            range "0..240";
+                        }
+                        description
+                            "RSTP port priority, in 16-point increments.";
+                    }
+                }
+            }
+            container mstp {
+                leaf configuration-name {
+                    type string {
+                        length "1..32";
+                    }
+                    description
+                        "MST region configuration name.";
+                }
+                leaf revision-level {
+                    type uint16;
+                    description
+                        "MST region revision number.";
+                }
+                leaf bridge-priority {
+                    type uint16 {
+                        range "0..61440";
+                    }
+                    description
+                        "CIST bridge priority, in 4096 increments.";
+                }
+                leaf hello-time {
+                    type uint8 {
+                        range "1..10";
+                    }
+                }
+                leaf max-age {
+                    type uint8 {
+                        range "6..40";
+                    }
+                }
+                leaf forward-delay {
+                    type uint8 {
+                        range "4..30";
+                    }
+                }
+                leaf max-hops {
+                    type uint8 {
+                        range "6..40";
+                    }
+                    description
+                        "MSTP maximum hop count advertised in CIST and MSTI BPDU remaining-hops fields.";
+                }
+                list instance {
+                    key "id";
+                    leaf id {
+                        type uint16 {
+                            range "1..4094";
+                        }
+                    }
+                    leaf bridge-priority {
+                        type uint16 {
+                            range "0..61440";
+                        }
+                        description
+                            "MSTI bridge priority, in 4096 increments.";
+                    }
+                    list vlan {
+                        key "vlan-id";
+                        leaf vlan-id {
+                            type vlan-id-type;
+                        }
+                    }
+                    list interface {
+                        key "name";
+                        leaf name {
+                            type ifname-type;
+                        }
+                        leaf path-cost {
+                            type uint32 {
+                                range "1..200000000";
+                            }
+                            description
+                                "Per-MSTI administrative path cost; defaults to protocols mstp interface path-cost or platform cost.";
+                        }
+                        leaf port-priority {
+                            type uint8 {
+                                range "0..240";
+                            }
+                            description
+                                "Per-MSTI port priority, in 16-point increments; defaults to protocols mstp interface port-priority.";
+                        }
+                    }
+                }
+                list interface {
+                    key "name";
+                    leaf name {
+                        type ifname-type;
+                    }
+                    leaf edge {
+                        type boolean;
+                        default false;
+                    }
+                    leaf bpdu-block-on-edge {
+                        type boolean;
+                        default false;
+                    }
+                    leaf root-protection {
+                        type boolean;
+                        default false;
+                    }
+                    leaf loop-protection {
+                        type boolean;
+                        default false;
+                    }
+                    leaf path-cost {
+                        type uint32 {
+                            range "1..200000000";
+                        }
+                        description
+                            "MSTP CIST/MSTI administrative path cost used in priority-vector comparison.";
+                    }
+                    leaf port-priority {
+                        type uint8 {
+                            range "0..240";
+                        }
+                        description
+                            "MSTP port priority, in 16-point increments.";
+                    }
+                }
+            }
+            container lacp {
+                leaf system-id {
+                    type mac-address-type;
+                    description
+                        "LACP actor system ID advertised in LACPDUs.";
+                }
+                leaf system-priority {
+                    type uint16 {
+                        range "1..65535";
+                    }
+                }
+                leaf port-priority {
+                    type uint16 {
+                        range "1..65535";
+                    }
+                }
+            }
+        }
+
+        container control-plane {
+            container protection {
+                list class {
+                    key "name";
+                    max-elements 8;
+                    leaf name {
+                        type enumeration {
+                            enum rstp;
+                            enum lldp;
+                            enum lacp;
+                            enum arp;
+                            enum icmp;
+                            enum ospf;
+                            enum bgp;
+                            enum igmp;
+                        }
+                    }
+                    leaf rate-pps {
+                        type uint32 {
+                            range "1..1000000";
+                        }
+                        description
+                            "CPU punt policer refill rate in packets per second.";
+                    }
+                    leaf burst-pkts {
+                        type uint32 {
+                            range "1..1000000";
+                        }
+                        description
+                            "CPU punt policer token bucket depth in packets.";
+                    }
+                }
+            }
+        }
+
+        container class-of-service {
+            container dscp-map {
+                description "Global IPv4/IPv6 DSCP to internal switch priority map; ECN bits are not modified.";
+                list entry {
+                    key "dscp";
+                    max-elements 64;
+                    leaf dscp { type uint8 { range "0..63"; } }
+                    leaf switch-priority { type uint8 { range "0..15"; } mandatory true; }
+                }
+            }
+            container shared-memory {
+                description "Global TC to FM10000 shared memory mapping. Changes recalculate chip-wide watermarks.";
+                list traffic-class {
+                    key "class";
+                    max-elements 8;
+                    leaf class { type uint8 { range "0..7"; } }
+                    leaf partition { type uint8 { range "0..1"; } mandatory true; }
+                }
+            }
+            container interfaces {
+                list interface {
+                    key "name";
+                    max-elements 128;
+                    leaf name {
+                        type ifname-type;
+                    }
+                    leaf trust {
+                        type cos-trust-mode-type;
+                        default ieee-802.1p;
+                        description
+                            "Ingress priority source for hardware switch-priority selection.";
+                    }
+                    leaf default-priority {
+                        type uint8 {
+                            range "0..7";
+                        }
+                        default 0;
+                        description
+                            "Default 802.1p/switch priority used when no trusted priority field is present.";
+                    }
+                    container priority-flow-control {
+                        description
+                            "Hardware PFC class masks for this physical port. Lossless SMP masks rely on FM10000 auto-pause watermark calculation.";
+                        leaf rx-class-mask {
+                            type cos-pfc-class-mask-type;
+                            default 0;
+                            description
+                                "Traffic classes that honor received PFC pause.";
+                        }
+                        leaf tx-class-mask {
+                            type cos-pfc-class-mask-type;
+                            default 0;
+                            description
+                                "Traffic classes advertised in generated PFC pause frames. A non-zero value selects class-based pause frame format.";
+                        }
+                        leaf lossless-smp-mask {
+                            type cos-smp-mask-type;
+                            default 0;
+                            description
+                                "Shared-memory partitions enabled for auto-calculated lossless pause on this port.";
+                        }
+                        leaf shared-pause-mask {
+                            type cos-smp-mask-type;
+                            default 0;
+                            description
+                                "Shared-memory partitions whose shared pause watermarks may generate pause on this port.";
+                        }
+                        leaf watchdog-detect-ms {
+                            type uint32 { range "0 | 1000..60000"; }
+                            default 0;
+                            description
+                                "Zero disables the FM10840 TC3 watchdog. Otherwise require continuous pause, queued data and no port TX data progress for this interval.";
+                        }
+                        leaf watchdog-recovery-ms {
+                            type uint32 { range "100..1000"; }
+                            default 100;
+                            description "Temporary TC3 pause-response release interval; recovery can lose packets.";
+                        }
+                        leaf watchdog-cooldown-ms {
+                            type uint32 { range "10000..600000"; }
+                            default 30000;
+                            must ". >= ../watchdog-detect-ms";
+                            description "Minimum interval before another recovery attempt.";
+                        }
+                    }
+                }
+            }
+            container forwarding {
+                list switch-priority {
+                    key "priority";
+                    max-elements 16;
+                    leaf priority {
+                        type uint8 {
+                            range "0..15";
+                        }
+                    }
+                    leaf traffic-class {
+                        type uint8 {
+                            range "0..7";
+                        }
+                        mandatory true;
+                        description
+                            "FM10000 egress traffic class selected for the switch priority.";
+                    }
+                }
+            }
+            container scheduler {
+                description
+                    "Hardware-backed FM10000 egress scheduler controls.";
+                list template {
+                    key "name";
+                    max-elements 32;
+                    description
+                        "Reusable FM10000 scheduler policy. Applying a template to an interface expands to the same hardware-backed traffic-class, scheduler-group, and shaping controls used by direct interface scheduler configuration.";
+                    leaf name {
+                        type vlan-name-type;
+                    }
+                    leaf traffic-class-enable-mask {
+                        type uint8 {
+                            range "1..255";
+                        }
+                        description
+                            "FM10000 traffic-class enable bitmask for interfaces using this template. Bit 0 controls traffic class 0.";
+                    }
+                    list traffic-class {
+                        key "class";
+                        max-elements 8;
+                        leaf class {
+                            type uint8 {
+                                range "0..7";
+                            }
+                        }
+                        leaf shaping-group {
+                            type uint8 {
+                                range "0..7";
+                            }
+                            mandatory true;
+                            description
+                                "FM10000 shaping group selected by this traffic class.";
+                        }
+                    }
+                    list group {
+                        key "id";
+                        max-elements 8;
+                        leaf id {
+                            type uint8 {
+                                range "0..7";
+                            }
+                        }
+                        leaf strict-priority {
+                            type boolean;
+                            default true;
+                            description
+                                "Enable strict priority for this FM10000 scheduler group. False selects DRR behavior.";
+                        }
+                        leaf weight {
+                            type uint32 {
+                                range "0..16777215";
+                            }
+                            default 0;
+                            description
+                                "FM10000 DRR quantum for this scheduler group.";
+                        }
+                        leaf rate-bps {
+                            type uint64 {
+                                range "1..100000000000";
+                            }
+                            description
+                                "FM10000 shaping group maximum transmission rate in bits per second.";
+                        }
+                        leaf burst-bits {
+                            type uint64 {
+                                range "1..67100672";
+                            }
+                            default 67100672;
+                            description
+                                "FM10000 shaping group maximum burst size in bits.";
+                        }
+                    }
+                }
+                container interfaces {
+                    list interface {
+                        key "name";
+                        max-elements 64;
+                        leaf name {
+                            type ifname-type;
+                        }
+                        leaf template {
+                            type vlan-name-type;
+                            description
+                                "Scheduler template applied to this egress interface.";
+                        }
+                        leaf traffic-class-enable-mask {
+                            type uint8 {
+                                range "1..255";
+                            }
+                            description
+                                "FM10000 traffic-class enable bitmask for this egress scheduler. Bit 0 controls traffic class 0.";
+                        }
+                        list traffic-class {
+                            key "class";
+                            max-elements 8;
+                            leaf class {
+                                type uint8 {
+                                    range "0..7";
+                                }
+                            }
+                            leaf shaping-group {
+                                type uint8 {
+                                    range "0..7";
+                                }
+                                mandatory true;
+                                description
+                                    "FM10000 shaping group selected by this traffic class.";
+                            }
+                        }
+                        list group {
+                            key "id";
+                            max-elements 8;
+                            leaf id {
+                                type uint8 {
+                                    range "0..7";
+                                }
+                            }
+                            leaf strict-priority {
+                                type boolean;
+                                default true;
+                                description
+                                    "Enable strict priority for this FM10000 scheduler group. False selects DRR behavior.";
+                            }
+                            leaf weight {
+                                type uint32 {
+                                    range "0..16777215";
+                                }
+                                default 0;
+                                description
+                                    "FM10000 DRR quantum for this scheduler group.";
+                            }
+                            leaf rate-bps {
+                                type uint64 {
+                                    range "1..100000000000";
+                                }
+                                description
+                                    "FM10000 shaping group maximum transmission rate in bits per second.";
+                            }
+                            leaf burst-bits {
+                                type uint64 {
+                                    range "1..67100672";
+                                }
+                                default 67100672;
+                                description
+                                    "FM10000 shaping group maximum burst size in bits.";
+                            }
+                        }
+                    }
+                }
+            }
+            container watermarks {
+                description
+                    "Hardware-backed FM10000 TX and switch-priority soft-drop watermark controls. RX and pause watermarks remain owned by SDK auto-pause mode.";
+                list switch-priority {
+                    key "priority";
+                    max-elements 8;
+                    leaf priority {
+                        type uint8 {
+                            range "0..7";
+                        }
+                    }
+                    leaf soft-drop {
+                        type uint32 {
+                            range "0..6291264";
+                        }
+                        description
+                            "FM10000 switch-priority shared soft-drop watermark.";
+                    }
+                    leaf soft-drop-jitter {
+                        type uint8 {
+                            range "0..7";
+                        }
+                        description
+                            "FM10000 switch-priority shared soft-drop jitter.";
+                    }
+                    leaf soft-drop-hog {
+                        type uint32 {
+                            range "0..6291264";
+                        }
+                        description
+                            "FM10000 switch-priority soft-drop hog watermark.";
+                    }
+                }
+                list interface {
+                    key "name";
+                    max-elements 64;
+                    leaf name {
+                        type ifname-type;
+                    }
+                    list traffic-class {
+                        key "class";
+                        max-elements 8;
+                        leaf class {
+                            type uint8 {
+                                range "0..7";
+                            }
+                        }
+                        leaf tx-hog {
+                            type uint32 {
+                                range "0..6291264";
+                            }
+                            description
+                                "FM10000 per-port per-traffic-class TX hog watermark.";
+                        }
+                        leaf tx-private {
+                            type uint32 {
+                                range "0..6291264";
+                            }
+                            description
+                                "FM10000 per-port per-traffic-class TX private watermark.";
+                        }
+                    }
+                }
+            }
+        }
+
+        container ethernet-switching-options {
+            leaf mac-table-aging-time {
+                type uint32 {
+                    range "0..1000000";
+                }
+                description
+                    "Dynamic MAC address aging time in seconds. A value of 0 disables SDK aging.";
+            }
+            container static {
+                list mac-table-entry {
+                    key "mac-address vlan";
+                    max-elements 512;
+                    leaf mac-address {
+                        type mac-address-type;
+                    }
+                    leaf vlan {
+                        type vlan-name-type;
+                    }
+                    leaf interface {
+                        type ifname-type;
+                        mandatory true;
+                    }
+                }
+            }
+            container secure-access-port {
+                list interface {
+                    key "name";
+                    max-elements 128;
+                    leaf name {
+                        type ifname-type;
+                    }
+                    leaf mac-limit {
+                        type uint32 {
+                            range "1..65535";
+                        }
+                        description
+                            "Dynamic MAC count limit for the interface.";
+                    }
+                    leaf violation-action {
+                        type string {
+                            length "4..8";
+                        }
+                        description
+                            "Action when dynamic MAC count exceeds mac-limit. alarm reports only and is supported on physical and aggregate interfaces. drop/restrict enable hardware port-security violation handling on physical interfaces, or on current physical members when configured on an aggregate. shutdown administratively disables the physical interface, or current physical members when configured on an aggregate, until cleared.";
+                    }
+                }
+            }
+            container mac-move {
+                container dampening {
+                    leaf threshold {
+                        type uint16 {
+                            range "1..1000";
+                        }
+                        description
+                            "Number of MAC moves allowed inside the dampening window before action is taken.";
+                    }
+                    leaf window {
+                        type uint16 {
+                            range "1..3600";
+                        }
+                        description
+                            "MAC move dampening window in seconds.";
+                    }
+                    leaf action {
+                        type string {
+                            length "5..8";
+                        }
+                        description
+                            "Action when a MAC move exceeds the dampening threshold. alarm reports only; shutdown administratively disables the destination physical interface until cleared.";
+                    }
+                }
+            }
+            container dhcp-snooping {
+                list vlan {
+                    key "name";
+                    max-elements 256;
+                    leaf name {
+                        type vlan-name-type;
+                    }
+                }
+                list interface {
+                    key "name";
+                    max-elements 128;
+                    leaf name {
+                        type ifname-type;
+                    }
+                    leaf trusted {
+                        type boolean;
+                        default false;
+                    }
+                }
+                list binding {
+                    key "mac-address vlan";
+                    max-elements 512;
+                    leaf mac-address {
+                        type mac-address-type;
+                    }
+                    leaf vlan {
+                        type vlan-name-type;
+                    }
+                    leaf interface {
+                        type ifname-type;
+                        mandatory true;
+                    }
+                    leaf ip-address {
+                        type string {
+                            pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                        }
+                        mandatory true;
+                    }
+                }
+            }
+            container arp-inspection {
+                list vlan {
+                    key "name";
+                    max-elements 256;
+                    leaf name {
+                        type vlan-name-type;
+                    }
+                }
+                list interface {
+                    key "name";
+                    max-elements 128;
+                    leaf name {
+                        type ifname-type;
+                    }
+                    leaf trusted {
+                        type boolean;
+                        default false;
+                    }
+                }
+            }
+            container user-filter {
+                description
+                    "Minimal hardware-backed L2 user filter. Supported terms match VLAN, ingress physical interface, and either source or destination MAC, then drop and count matching traffic.";
+                list term {
+                    key "name";
+                    max-elements 64;
+                    leaf name {
+                        type string {
+                            pattern '[A-Za-z][A-Za-z0-9_.-]{0,63}';
+                        }
+                    }
+                    leaf vlan {
+                        type vlan-name-type;
+                        mandatory true;
+                    }
+                    leaf interface {
+                        type ifname-type;
+                        mandatory true;
+                    }
+                    choice mac-match {
+                        mandatory true;
+                        leaf source-mac {
+                            type mac-address-type;
+                        }
+                        leaf destination-mac {
+                            type mac-address-type;
+                        }
+                    }
+                    leaf action {
+                        type enumeration {
+                            enum drop;
+                        }
+                        default drop;
+                    }
+                }
+            }
+            container ingress-acl {
+                description
+                    "Scoped hardware-backed ingress ACL. Supported terms match VLAN, ingress physical interface, and either source or destination MAC, then drop and count matching traffic.";
+                list term {
+                    key "name";
+                    max-elements 64;
+                    leaf name {
+                        type string {
+                            pattern '[A-Za-z][A-Za-z0-9_.-]{0,63}';
+                        }
+                    }
+                    leaf vlan {
+                        type vlan-name-type;
+                        mandatory true;
+                    }
+                    leaf interface {
+                        type ifname-type;
+                        mandatory true;
+                    }
+                    choice mac-match {
+                        mandatory true;
+                        leaf source-mac {
+                            type mac-address-type;
+                        }
+                        leaf destination-mac {
+                            type mac-address-type;
+                        }
+                    }
+                    leaf action {
+                        type enumeration {
+                            enum drop;
+                        }
+                        default drop;
+                    }
+                }
+            }
+            container ingress-ipv4-acl {
+                description
+                    "Hardware-backed ingress IPv4 ACL. Supported terms match VLAN, ingress physical interface, IPv4 source/destination address or prefix, DSCP/ECN, protocol, exact TCP/UDP source/destination port, and TCP flags, then drop and count matching traffic.";
+                list term {
+                    key "name";
+                    max-elements 64;
+                    leaf name {
+                        type string {
+                            pattern '[A-Za-z][A-Za-z0-9_.-]{0,63}';
+                        }
+                    }
+                    leaf vlan {
+                        type vlan-name-type;
+                        mandatory true;
+                    }
+                    leaf interface {
+                        type ifname-type;
+                        mandatory true;
+                    }
+                    leaf source-ip {
+                        type string {
+                            pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                        }
+                    }
+                    leaf source-prefix {
+                        type string {
+                            pattern '([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])';
+                        }
+                    }
+                    leaf destination-ip {
+                        type string {
+                            pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                        }
+                    }
+                    leaf destination-prefix {
+                        type string {
+                            pattern '([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])';
+                        }
+                    }
+                    leaf dscp {
+                        type uint8 {
+                            range "0..63";
+                        }
+                    }
+                    leaf ecn {
+                        type uint8 {
+                            range "0..3";
+                        }
+                    }
+                    leaf protocol {
+                        type uint8;
+                    }
+                    choice source-port-match {
+                        leaf source-port {
+                            type uint16;
+                        }
+                        leaf source-port-range {
+                            type string {
+                                pattern '[0-9]{1,5}-[0-9]{1,5}';
+                            }
+                            description
+                                "Inclusive TCP/UDP source port range. Compiled into one or more FM10000 ternary Flow entries.";
+                        }
+                    }
+                    choice destination-port-match {
+                        leaf destination-port {
+                            type uint16;
+                        }
+                        leaf destination-port-range {
+                            type string {
+                                pattern '[0-9]{1,5}-[0-9]{1,5}';
+                            }
+                            description
+                                "Inclusive TCP/UDP destination port range. Compiled into one or more FM10000 ternary Flow entries.";
+                        }
+                    }
+                    leaf tcp-flags {
+                        type uint8 {
+                            range "0..63";
+                        }
+                        description
+                            "TCP flag value using FIN=1, SYN=2, RST=4, PSH=8, ACK=16, URG=32.";
+                    }
+                    leaf tcp-flags-mask {
+                        type uint8 {
+                            range "1..63";
+                        }
+                        description
+                            "TCP flag mask. If omitted when tcp-flags is present, all six TCP flag bits are matched.";
+                    }
+                    leaf action {
+                        type enumeration {
+                            enum drop;
+                            enum count;
+                        }
+                        default drop;
+                        description
+                            "drop discards and counts matching traffic; count permits and counts matching traffic.";
+                    }
+                }
+            }
+            container acl-policer {
+                description
+                    "Scoped FM10000 ACL compiler policer. This is a deliberately narrow public policer path backed by the ACL compiler owner, not the Flow TCAM ingress-ipv4-acl action path.";
+                list term {
+                    key "name";
+                    max-elements 8;
+                    leaf name {
+                        type string {
+                            pattern '[A-Za-z][A-Za-z0-9_.-]{0,63}';
+                        }
+                    }
+                    leaf interface {
+                        type ifname-type;
+                        mandatory true;
+                        description
+                            "Ingress physical interface matched through an FM10000 ACL port-set.";
+                    }
+                    leaf destination-mac {
+                        type mac-address-type;
+                        mandatory true;
+                        description
+                            "Destination MAC matched by the ACL compiler rule.";
+                    }
+                    leaf bandwidth {
+                        type uint32 {
+                            range "1..100000000";
+                        }
+                        mandatory true;
+                        description
+                            "Committed policer rate in Kbps.";
+                    }
+                    leaf burst-size {
+                        type uint32 {
+                            range "1024..268435456";
+                        }
+                        default 65536;
+                        description
+                            "Committed policer burst size in bytes.";
+                    }
+                }
+            }
+            container egress-acl {
+                description
+                    "Scoped hardware-backed egress ACL. Supported terms bind one physical egress interface to source and/or destination MAC deny conditions; each egress interface may have at most one active term because FM10000 egress ACL counters are per egress port.";
+                list term {
+                    key "name";
+                    max-elements 8;
+                    must "source-mac or destination-mac" {
+                        error-message
+                            "egress-acl term requires source-mac or destination-mac";
+                    }
+                    leaf name {
+                        type string {
+                            pattern '[A-Za-z][A-Za-z0-9_.-]{0,63}';
+                        }
+                    }
+                    leaf interface {
+                        type ifname-type;
+                        mandatory true;
+                        description
+                            "Physical egress interface whose egress ACL association owns this term.";
+                    }
+                    leaf source-mac {
+                        type mac-address-type;
+                        description
+                            "Source MAC denied by the egress ACL rule.";
+                    }
+                    leaf destination-mac {
+                        type mac-address-type;
+                        description
+                            "Destination MAC denied by the egress ACL rule.";
+                    }
+                    leaf action {
+                        type enumeration {
+                            enum drop;
+                        }
+                        default drop;
+                    }
+                }
+            }
+            container acl-independent {
+                description
+                    "Candidate model for public independent General ACL groups. The model is intentionally separate from acl group aliases, which continue to normalize into scoped owners until this independent owner has allocator, read-back, rollback, restart/replay, and traffic evidence.";
+                list group {
+                    key "name";
+                    max-elements 32;
+                    leaf name {
+                        type string {
+                            pattern '[A-Za-z][A-Za-z0-9_.-]{0,63}';
+                        }
+                    }
+                    list term {
+                        key "name family";
+                        max-elements 32;
+                        leaf name {
+                            type string {
+                                pattern '[A-Za-z][A-Za-z0-9_.-]{0,63}';
+                            }
+                        }
+                        leaf family {
+                            type enumeration {
+                                enum ethernet;
+                                enum inet;
+                                enum policer;
+                                enum egress;
+                            }
+                            description
+                                "Compiler family requested for this independent group term.";
+                        }
+                        leaf vlan {
+                            type vlan-name-type;
+                        }
+                        leaf interface {
+                            type ifname-type;
+                            description
+                                "Ingress interface for ethernet/inet/policer terms, or egress interface for egress terms.";
+                        }
+                        leaf source-mac {
+                            type mac-address-type;
+                        }
+                        leaf destination-mac {
+                            type mac-address-type;
+                        }
+                        leaf source-ip {
+                            type string {
+                                pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                            }
+                        }
+                        leaf source-prefix {
+                            type string {
+                                pattern '([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])';
+                            }
+                        }
+                        leaf destination-ip {
+                            type string {
+                                pattern '([0-9]{1,3}\.){3}[0-9]{1,3}';
+                            }
+                        }
+                        leaf destination-prefix {
+                            type string {
+                                pattern '([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]|[1-2][0-9]|3[0-2])';
+                            }
+                        }
+                        leaf dscp {
+                            type uint8 {
+                                range "0..63";
+                            }
+                        }
+                        leaf ecn {
+                            type uint8 {
+                                range "0..3";
+                            }
+                        }
+                        leaf protocol {
+                            type uint8;
+                        }
+                        leaf source-port {
+                            type uint16;
+                        }
+                        leaf source-port-range {
+                            type string {
+                                pattern '[0-9]{1,5}-[0-9]{1,5}';
+                            }
+                        }
+                        leaf destination-port {
+                            type uint16;
+                        }
+                        leaf destination-port-range {
+                            type string {
+                                pattern '[0-9]{1,5}-[0-9]{1,5}';
+                            }
+                        }
+                        leaf tcp-flags {
+                            type uint8 {
+                                range "0..63";
+                            }
+                        }
+                        leaf tcp-flags-mask {
+                            type uint8 {
+                                range "1..63";
+                            }
+                        }
+                        leaf action {
+                            type enumeration {
+                                enum drop;
+                                enum count;
+                                enum policer;
+                            }
+                            description
+                                "Requested independent ACL action. policer remains fail-closed until the independent owner has public policer evidence.";
+                        }
+                        leaf bandwidth {
+                            type uint32 {
+                                range "1..100000000";
+                            }
+                            description
+                                "Requested policer rate in Kbps for future independent policer action.";
+                        }
+                        leaf burst-size {
+                            type uint32 {
+                                range "1024..268435456";
+                            }
+                            description
+                                "Requested policer burst size in bytes for future independent policer action.";
+                        }
+                    }
+                }
+            }
+            container storm-control {
+                list interface {
+                    key "name";
+                    max-elements 128;
+                    leaf name {
+                        type ifname-type;
+                    }
+                    leaf bandwidth {
+                        type uint32 {
+                            range "22000..100000000";
+                        }
+                        mandatory true;
+                        description
+                            "Ingress storm-control token bucket refill rate in Kbps.";
+                    }
+                    leaf burst-size {
+                        type uint32 {
+                            range "1..104857600";
+                        }
+                        default 65536;
+                        description
+                            "Ingress storm-control token bucket burst size in bytes.";
+                    }
+                }
+            }
+            container ingress-rate-limit {
+                list interface {
+                    key "name";
+                    max-elements 128;
+                    leaf name {
+                        type ifname-type;
+                    }
+                    leaf bandwidth {
+                        type uint32 {
+                            range "22000..100000000";
+                        }
+                        mandatory true;
+                        description
+                            "Ingress per-port traffic rate limit in Kbps.";
+                    }
+                    leaf burst-size {
+                        type uint32 {
+                            range "1..104857600";
+                        }
+                        default 65536;
+                        description
+                            "Ingress per-port token bucket burst size in bytes.";
+                    }
+                }
+            }
+            container egress-rate-limit {
+                list interface {
+                    key "name";
+                    max-elements 128;
+                    leaf name {
+                        type ifname-type;
+                    }
+                    leaf bandwidth {
+                        type uint32 {
+                            range "22000..100000000";
+                        }
+                        mandatory true;
+                        description
+                            "Egress per-port shaping rate in Kbps.";
+                    }
+                    leaf burst-size {
+                        type uint32 {
+                            range "1..8387584";
+                        }
+                        default 65536;
+                        description
+                            "Egress per-port shaper burst size in bytes.";
+                    }
+                }
+            }
+        }
+    }
+}

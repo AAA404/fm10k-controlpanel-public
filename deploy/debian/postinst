@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+case "$1" in
+configure)
+    if ! getent group netlab-ipc >/dev/null; then addgroup --system netlab-ipc; fi
+    if ! getent passwd fm10k-web >/dev/null; then
+        adduser --system --group --home /var/lib/fm10k-controlpanel --no-create-home fm10k-web
+    fi
+    adduser fm10k-web netlab-ipc
+    install -d -o fm10k-web -g fm10k-web -m 0750 /var/lib/fm10k-controlpanel
+    install -d -o root -g root -m 0755 /etc/systemd/timesyncd.conf.d
+    if [ -d /run/systemd/system ]; then
+        systemctl daemon-reload
+        deb-systemd-helper enable fm10k-panel.service >/dev/null
+        deb-systemd-helper enable fm10k-time.socket >/dev/null
+        deb-systemd-invoke start fm10k-time.socket || true
+        deb-systemd-invoke restart fm10k-panel.service || true
+    fi
+    ;;
+esac
+# No driver loading, ASIC initialization, network changes, or switchd restart.
+exit 0

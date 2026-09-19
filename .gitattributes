@@ -1,0 +1,2 @@
+# Keep text files portable; externally supplied platform inputs are ignored.
+* text=auto

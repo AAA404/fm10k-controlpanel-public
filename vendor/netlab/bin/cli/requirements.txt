@@ -1,0 +1,2 @@
+prompt_toolkit>=3.0.40,<4
+requests>=2.31,<3
