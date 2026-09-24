@@ -9,7 +9,8 @@ const fs=require('node:fs/promises'),path=require('node:path'),assert=require('n
   assert.equal(raw.status,0,raw.stderr)
   const configuration=JSON.parse(raw.stdout),errors=[],checks=[],installs=[]
   let state={enabled:true,state:'idle',current_version:'0.1.0',candidate:null,job:null,message:'可以检查 GitHub 的最新稳定版本。'}
-  let failRead=false,loseInstallReply=false,nextVersion='0.2.0'
+  let failRead=false,loseInstallReply=false,nextVersion='0.2.0',holdRead=false
+  let reportHeldRead=()=>{},releaseHeldRead=()=>{}
   const candidate=version=>({version,manifest_sha256:'a'.repeat(64),release_url:'https://github.com/AAA404/fm10k-controlpanel-public/releases/tag/v'+version})
   const browser=await chromium.launch({headless:true,...(process.env.FM10K_BROWSER_CHANNEL?{channel:process.env.FM10K_BROWSER_CHANNEL}:{})})
   const deadline=setTimeout(()=>{process.exitCode=1;void browser.close()},90000)
@@ -26,7 +27,9 @@ const fs=require('node:fs/promises'),path=require('node:path'),assert=require('n
         case '/api/v1/telemetry':return send({ports:[],sensors:{temperatures:[],fan:{}},optics:[]})
         case '/api/v1/system':return send({hostname:'fixture',version:state.current_version})
         case '/api/v1/system/time':return send({available:false,state:'unavailable',enabled:false,synchronized:false,server_time:Date.now()/1000,servers:[],message:'fixture'})
-        case '/api/v1/updates':return failRead?send({detail:'service restarting'},503):send(state)
+        case '/api/v1/updates':
+          if(holdRead){reportHeldRead();await new Promise(resolve=>{releaseHeldRead=resolve})}
+          return failRead?send({detail:'service restarting'},503):send(state)
         case '/api/v1/updates/check':
           assert.equal(request.headers()['x-csrf-token'],'fixture');checks.push(request.postDataJSON())
           state={...state,state:'available',candidate:candidate(nextVersion),message:'发现可用稳定版本。'}
@@ -52,6 +55,24 @@ const fs=require('node:fs/promises'),path=require('node:path'),assert=require('n
     assert(await install.isDisabled(),'restart acknowledgment is mandatory')
     assert.equal(await card.locator('input[type=password],input[type=text]').count(),0,'no credential UI')
     await card.getByRole('checkbox').check()
+    const backgroundStarted=new Promise(resolve=>{reportHeldRead=resolve})
+    holdRead=true
+    await backgroundStarted
+    assert(await card.getByRole('button',{name:'检查更新',exact:true}).isEnabled(),'background read must not disable check')
+    assert(await install.isEnabled(),'background read must not disable an acknowledged install')
+    assert(await card.getByRole('button',{name:'刷新状态',exact:true}).isEnabled(),'background read must not disable manual refresh')
+    assert(await install.evaluate(element=>element.classList.contains('primary')),'install uses the primary button style')
+    assert.equal(await card.locator('.ota-actions > button.secondary').count(),2,'check and refresh use the same secondary style')
+    holdRead=false;releaseHeldRead()
+    const failedPoll=page.waitForResponse(response=>response.url().endsWith('/api/v1/updates') && response.status()===503)
+    failRead=true
+    await failedPoll
+    await page.waitForTimeout(100)
+    assert(await install.isEnabled(),'one failed background read must not disable installation')
+    assert.equal(await card.getByRole('alert').count(),0,'one failed background read must not flash an error')
+    failRead=false
+    const output=path.join(root,'artifacts/update-ui');await fs.mkdir(output,{recursive:true})
+    await page.screenshot({path:path.join(output,'update-ready.png'),fullPage:true})
     await install.click()
     await card.getByText('更新已排队。',{exact:true}).waitFor()
     assert.equal(installs.length,1)
@@ -82,13 +103,12 @@ const fs=require('node:fs/promises'),path=require('node:path'),assert=require('n
     await card.getByRole('button',{name:'刷新状态',exact:true}).click()
     await card.getByText('更新失败，已恢复并验证原版本。',{exact:true}).waitFor()
     assert.equal(await card.getByRole('alert').count(),0,'only the matching new job terminal result resolves a lost reply')
-    const output=path.join(root,'artifacts/update-ui');await fs.mkdir(output,{recursive:true})
     await page.screenshot({path:path.join(output,'update-status.png'),fullPage:true})
     await page.setViewportSize({width:390,height:844})
     await page.waitForFunction(()=>document.documentElement.scrollWidth<=innerWidth)
     await page.screenshot({path:path.join(output,'update-mobile.png'),fullPage:true})
     assert.deepEqual(checks,[{},{}]);assert.deepEqual(errors,[])
-    const report={passed:true,hardware_access:false,github_access:false,checks:['explicit check','CSRF','maintenance acknowledgment','restart reconnect','no repeat after lost response','checkpoint rollback state','mobile layout']}
+    const report={passed:true,hardware_access:false,github_access:false,checks:['explicit check','CSRF','maintenance acknowledgment','stable buttons during background polling','no flash after one failed poll','consistent action styles','restart reconnect','no repeat after lost response','checkpoint rollback state','mobile layout']}
     await fs.writeFile(path.join(output,'report.json'),JSON.stringify(report,null,2)+'\n')
     console.log(JSON.stringify(report))
   } finally {clearTimeout(deadline);await browser.close()}

@@ -27,12 +27,12 @@ Profile 与原厂输入取得方式见[构建说明](BUILD.md)。压缩包包含
 
 ## 取得并检查制品
 
-通过可信的仓库 Release 页面取得 `fm10k-controlpanel-0.2.2.tar.gz`、对应 `.deb`、`release-manifest.json` 和 `SHA256SUMS`。私有仓库可在工作站使用已授权的 GitHub CLI 下载；不用把工作站的凭据复制给设备。草稿仅供维护者审核，设备在线更新不会选中草稿。
+通过可信的仓库 Release 页面取得 `fm10k-controlpanel-0.2.3.tar.gz`、对应 `.deb`、`release-manifest.json` 和 `SHA256SUMS`。私有仓库可在工作站使用已授权的 GitHub CLI 下载；不用把工作站的凭据复制给设备。草稿仅供维护者审核，设备在线更新不会选中草稿。
 
 ```sh
 sha256sum -c SHA256SUMS
-tar -xzf fm10k-controlpanel-0.2.2.tar.gz
-cd fm10k-controlpanel-0.2.2
+tar -xzf fm10k-controlpanel-0.2.3.tar.gz
+cd fm10k-controlpanel-0.2.3
 sudo ./install.sh check \
   --sdk /path/to/ies \
   --platform /path/to/licensed-platform.cfg \

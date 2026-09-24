@@ -18,31 +18,37 @@ const label = computed(() => labels[state.value.state] || '正在读取')
 const canInstall = computed(() => state.value.enabled && state.value.state === 'available' && state.value.candidate &&
   acknowledged.value && !sending.value && !reading.value && !visibleError.value)
 watch(() => state.value.candidate?.manifest_sha256, () => { acknowledged.value = false })
-async function refresh() {
-  if (disposed || reading.value || sending.value) return
-  reading.value = true
+let pollInFlight = false, failedReads = 0
+async function refresh(manual = true) {
+  if (disposed || sending.value || (manual ? reading.value : pollInFlight || reading.value)) return
+  if (manual) reading.value = true
+  else pollInFlight = true
   const current = ++generation
   try {
     const response = await api('/updates')
     if (!disposed && current === generation) {
-      state.value = response; readError.value = ''
+      state.value = response; readError.value = ''; failedReads = 0
       if (uncertainRequest && response.job?.id && response.job.id !== uncertainRequest.previousJobId &&
           response.job.version === uncertainRequest.version && ['succeeded','failed','rolled_back'].includes(response.state)) {
         error.value = ''; uncertainRequest = null
       }
     }
   } catch (e) {
-    if (!disposed && current === generation) readError.value = busy.value ? '服务暂时断开，正在重新读取更新状态。' : e instanceof Error ? e.message : String(e)
-  } finally { reading.value = false }
+    if (!disposed && current === generation && (manual || ++failedReads >= 3))
+      readError.value = busy.value ? '服务暂时断开，正在重新读取更新状态。' : e instanceof Error ? e.message : String(e)
+  } finally {
+    if (manual) reading.value = false
+    else pollInFlight = false
+  }
 }
 async function check() {
-  if (!state.value.enabled || sending.value || busy.value) return
+  if (!state.value.enabled || sending.value || reading.value || busy.value) return
   const current = ++generation
   sending.value = true; error.value = ''; readError.value = ''; acknowledged.value = false
   uncertainRequest = null
   try {
     const response = await api('/updates/check', {})
-    if (!disposed && current === generation) state.value = response
+    if (!disposed && current === generation) { state.value = response; failedReads = 0 }
   } catch (e) { if (!disposed) error.value = e instanceof Error ? e.message : String(e) }
   finally { sending.value = false }
 }
@@ -62,7 +68,10 @@ async function install() {
     }
   } finally { sending.value = false }
 }
-onMounted(() => { refresh(); timer = setInterval(refresh,4000) })
+onMounted(() => {
+  void refresh(false)
+  timer = setInterval(() => { if (document.visibilityState === 'visible') void refresh(false) }, 4000)
+})
 onUnmounted(() => { disposed = true; ++generation; clearInterval(timer) })
 </script>
 
@@ -81,9 +90,9 @@ onUnmounted(() => { disposed = true; ++generation; clearInterval(timer) })
       <label><input v-model="acknowledged" type="checkbox" :disabled="sending" />我已安排维护窗口，确认允许重启交换服务</label>
     </div>
     <div class="ota-actions">
-      <button class="secondary" :disabled="!state.enabled || sending || reading || busy" @click="check"><RefreshCw :size="15" />检查更新</button>
-      <button v-if="state.candidate && !busy" :disabled="!canInstall" @click="install">安装 {{ state.candidate.version }}</button>
-      <button class="text-button" :disabled="sending || reading" @click="refresh">刷新状态</button>
+      <button class="secondary" type="button" :disabled="!state.enabled || sending || reading || busy" :aria-busy="sending" @click="check"><RefreshCw :size="15" />检查更新</button>
+      <button v-if="state.candidate && !busy" class="primary" type="button" :disabled="!canInstall" :aria-busy="sending" @click="install">安装 {{ state.candidate.version }}</button>
+      <button class="secondary" type="button" :disabled="sending || reading" :aria-busy="reading" @click="refresh()">刷新状态</button>
       <span v-if="sending || (busy && state.state !== 'recovery_required')" class="ota-progress"><LoaderCircle :size="16" />{{ sending ? '请求中' : label }}</span>
     </div>
     <p v-if="state.job" class="body-copy">更新任务 <span class="mono">{{ state.job.version }}</span> · {{ labels[state.job.state] || state.job.state }}</p>
