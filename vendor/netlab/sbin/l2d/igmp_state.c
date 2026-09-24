@@ -104,10 +104,12 @@ static int decode(char *text, size_t size, const char *boot, igmp_runtime_image 
         unsigned long long tx;
         used = -1;
         if (line[0] == 'M') {
+            /* A pause carried across reboot may extend a lease beyond
+             * this boot's uptime. Check representation, not that clock. */
             if (sscanf(line, "M %u %u %u %x %lld %u %u%n", &index, &vid, &port, &ip,
                        &expiry, &pending, &retiring, &used) != 7 || used < 0 || line[used] ||
                 index >= IGMP_MAX_DYNAMIC_MEMBERS || vid < 1 || vid > 4094 || port < 1 || port > 24 ||
-                expiry < 0 || expiry > saved_at + 3600 || pending > 1 || retiring > 1 ||
+                expiry < 0 || pending > 1 || retiring > 1 ||
                 (retiring && !pending) || out->dynamic[index].used) return -1;
             igmp_dynamic_member *m = &out->dynamic[index];
             *m = (igmp_dynamic_member){.used = true, .pending = true, .retiring = retiring != 0,
@@ -130,8 +132,11 @@ static int decode(char *text, size_t size, const char *boot, igmp_runtime_image 
                 if (j != index && other->used && other->vid == r->vid && !memcmp(other->mac, r->mac, 6)) return -1;
             }
         } else if (line[0] == 'P') {
+            /* Paused seconds use wall time and can exceed CLOCK_BOOTTIME
+             * after a reboot while the same port transaction is held. */
             if (sscanf(line, "P %u %llx %lld%n", &port, &tx, &seconds, &used) != 3 ||
-                used < 0 || line[used] || port < 1 || port > 24 || !tx || seconds < 0 || seconds > saved_at ||
+                used < 0 || line[used] || port < 1 || port > 24 || !tx || seconds < 0 ||
+                (long long)(time_t)seconds != seconds ||
                 out->resumed_tx[port - 1]) return -1;
             out->resumed_tx[port - 1] = tx;
             out->resumed_seconds[port - 1] = (time_t)seconds;

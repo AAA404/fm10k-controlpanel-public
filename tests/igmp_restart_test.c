@@ -181,6 +181,20 @@ int main(int argc, char **argv) {
         sync_dynamic_members_locked(snapshot(), IGMP_MEMBER_WRITE_BUDGET);
         sync_router_groups_locked(snapshot(), IGMP_ROUTER_WRITE_BUDGET);
         assert(!additions[1] && !additions[5] && present[24]);
+    } else if (!strcmp(argv[2], "pause-long-prepare")) {
+        report(); lease(true);
+        assert(!nl_port_scope_begin(123, 1, 100));
+        /* The wall-clock pause can span a reboot and exceed CLOCK_BOOTTIME. */
+        time_t duration = igmp_clock_seconds() + 4000;
+        resume_listener_timers(1, duration);
+        assert(g_igmp.runtime.dynamic[0].expires_at == lease(false) + duration);
+        _exit(0);
+    } else if (!strcmp(argv[2], "pause-long-recover")) {
+        assert(nl_port_scope_paused(1));
+        assert(g_igmp.runtime.dynamic[0].used);
+        assert(g_igmp.runtime.resumed_seconds[0] > igmp_clock_seconds());
+        assert(g_igmp.runtime.dynamic[0].expires_at > igmp_clock_seconds() + 3600);
+        assert(!nl_port_scope_end(123));
     } else if (!strcmp(argv[2], "new-boot-prepare")) {
         report();
         strcpy(g_igmp_store.boot_id, "00000000-0000-0000-0000-000000000000");

@@ -40,6 +40,7 @@ def test_native_igmp_process_restart_ownership(tmp_path):
         [("expire-prepare", 0), ("expire-recover", 0)],
         [("failed-checkpoint", 0), ("recover-empty", 0)],
         [("pause-prepare", 0), ("pause-recover", 0)],
+        [("pause-long-prepare", 0), ("pause-long-recover", 0)],
         [("new-boot-prepare", 0), ("new-boot-recover", 0)],
         [("crash-add", 42), ("corrupt", 0)],
         [("lock", 0)],
