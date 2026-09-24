@@ -22,6 +22,8 @@ LEGACY_UNITS = (
 )
 BDF = COMPATIBILITY["pci_bdf"]
 MIN_FREE = 4 * 1024 ** 3
+IORESOURCE_MEM = 0x200
+BAR0_MIN_SIZE = 0x100000  # FM10K_UC_ADDR_SIZE in the paired driver.
 
 
 def read_command(*arguments):
@@ -37,6 +39,19 @@ def _text(path, default=""):
         return path.read_text().strip()
     except OSError:
         return default
+
+
+def required_pci_apertures(device: Path) -> bool:
+    """Require the BARs mapped by the paired driver before changing the host."""
+    try:
+        resources = (device / "resource").read_text().splitlines()
+        for index, minimum_size in ((0, BAR0_MIN_SIZE), (4, 1)):
+            start, end, flags = (int(value, 16) for value in resources[index].split()[:3])
+            if not start or end < start or end - start + 1 < minimum_size or not flags & IORESOURCE_MEM:
+                return False
+    except (OSError, ValueError, IndexError):
+        return False
+    return True
 
 
 def network_dependencies(root, interface):
@@ -102,6 +117,8 @@ def preflight(source: Path, sdk: Path, platform_file: Path, interface: str, mana
         driver_ok = inventory_report["checks"]["driver_version"] and inventory_report["checks"]["uio_bound"]
         result["driver_install_required"] = not driver_ok
         check("board_identity", board_ok, f"需要唯一的 Silicom PE31625G24DiRA，BDF {BDF}，完整且校验通过的 VPD，已知 B0/A11 修订。")
+        check("pci_apertures", board_ok and required_pci_apertures(root / f"sys/bus/pci/devices/{BDF}"),
+              "配套驱动需要已分配的 PCI BAR0（至少 1 MiB）和 BAR4；缺失时不能映射寄存器或绑定 UIO。")
         current_driver = boards[0]["driver"] if len(boards) == 1 else None
         check("driver_owner", current_driver in (None, "fm10k"), "板卡不能绑定 VFIO、其他驱动或被虚拟机直通。")
         if upgrading:

@@ -15,6 +15,8 @@ from pathlib import Path
 import pwd
 import secrets
 import shutil
+import ssl
+import stat
 import subprocess
 import tarfile
 import tempfile
@@ -30,10 +32,46 @@ from .update_gate import startup_permission
 DAEMONS = ("identityd", "switchd", "configd", "ifd", "packetd", "l2d", "stpd",
            "lacpd", "lldpd", "statsd", "chassisd", "linkmond", "mgmtd")
 SERVICES = tuple(f"fm10k-{name}.service" for name in DAEMONS)
+STARTUP_UNITS = ("fm10k-switch.target", "fm10k-panel.service", "fm10k-time.socket",
+                 "fm10k-update.socket", "fm10k-update-worker.service")
 APT_PACKAGES = ("build-essential", "cmake", "pkg-config", "libpcre2-dev", "libssl-dev", "libcap-dev",
                 "python3-fastapi", "python3-pydantic", "python3-uvicorn", "python3-prompt-toolkit", "python3-requests",
                 "nginx", "openssl", "ca-certificates", "iproute2", "i2c-tools", "kmod", "dkms", "systemd-timesyncd",
                 "adduser", "init-system-helpers")
+
+WAIT_MANAGEMENT_SCRIPT = '''#!/usr/bin/python3
+"""Wait until the configured management address is assigned before nginx binds."""
+import ipaddress
+import json
+import subprocess
+import sys
+import time
+
+interface, address = sys.argv[1:]
+address = str(ipaddress.ip_address(address))
+deadline = time.monotonic() + 180
+while True:
+    try:
+        result = subprocess.run(
+            ["/usr/sbin/ip", "-j", "address", "show", "dev", interface],
+            capture_output=True, text=True, timeout=5, check=False,
+        )
+        if result.returncode == 0:
+            assigned = {
+                item["local"]
+                for device in json.loads(result.stdout)
+                for item in device.get("addr_info", [])
+                if "local" in item
+            }
+            if address in assigned:
+                sys.exit(0)
+    except (OSError, ValueError, KeyError, subprocess.TimeoutExpired):
+        pass
+    if time.monotonic() >= deadline:
+        print(f"management address {address} did not appear on {interface}", file=sys.stderr)
+        sys.exit(255)
+    time.sleep(1)
+'''
 
 
 class Paths:
@@ -61,6 +99,25 @@ def run(*arguments, timeout=1800, env=None):
     if result.returncode:
         raise ReleaseError(f"{arguments[0]} failed ({result.returncode}): " + (result.stderr or result.stdout)[-2400:])
     return result.stdout
+
+
+@contextmanager
+def native_build_umask():
+    previous = os.umask(0o022)
+    try:
+        yield
+    finally:
+        os.umask(previous)
+
+
+def secure_native_tree(root: Path):
+    """Remove write access that the daemon launcher and startup guard reject."""
+    for path in (root, *root.rglob("*")):
+        if path.is_symlink() or not (path.is_file() or path.is_dir()):
+            raise ReleaseError("native build contains an unsupported entry: " + str(path))
+        mode = stat.S_IMODE(path.stat().st_mode)
+        if mode & 0o022:
+            path.chmod(mode & ~0o022)
 
 
 def atomic_write(path: Path, raw: bytes, mode=0o600):
@@ -192,28 +249,40 @@ def copy_eye_firmware(stage, firmware):
 
 
 def stage_native(source: Path, sdk: Path, platform_file: Path, profile: str, paths: Paths, runner=run, *, eye_firmware=None) -> Path:
-    verify_bundle(source)
-    paths.base.mkdir(mode=0o755, parents=True, exist_ok=True)
-    stage = paths.base / (".stage-" + secrets.token_hex(8))
-    shutil.copytree(source, stage)
-    stage.chmod(0o755)
-    verify_bundle(stage)
-    _copy_inputs(stage, sdk, platform_file, profile)
-    if eye_firmware is not None:
-        copy_eye_firmware(stage, eye_firmware)
-    runner("make", "-C", stage / "vendor/netlab", "-j1", "control-plane", "hardware",
-           f"NETLAB_SDK_DIR={stage / 'hardware/sdk/ies'}", f"NETLAB_LIBYANG_PREFIX={paths.libyang}")
-    environment = {"LD_LIBRARY_PATH": f"{stage / 'hardware/sdk/ies/build'}:{paths.libyang / 'lib'}"}
-    for name in (*DAEMONS, "netlab-daemon-launch", "netlab-internal-rpc"):
-        binary = stage / "vendor/netlab/build" / name
-        with binary.open("rb") as stream:
-            header = stream.read(20)
-        if len(header) != 20 or header[:6] != b"\x7fELF\x02\x01" or header[18:20] != b"\x3e\x00":
-            raise ReleaseError("incomplete amd64 native build: " + name)
-        linked = runner("ldd", "-r", binary, env=environment, timeout=30)
-        if "not found" in linked or "undefined symbol" in linked:
-            raise ReleaseError("unresolved native dependency: " + name)
-    return stage
+    with native_build_umask():
+        verify_bundle(source)
+        paths.base.mkdir(mode=0o755, parents=True, exist_ok=True)
+        paths.base.chmod(0o755)
+        stage = paths.base / (".stage-" + secrets.token_hex(8))
+        shutil.copytree(source, stage)
+        stage.chmod(0o755)
+        verify_bundle(stage)
+        _copy_inputs(stage, sdk, platform_file, profile)
+        if eye_firmware is not None:
+            copy_eye_firmware(stage, eye_firmware)
+        runner("make", "-C", stage / "vendor/netlab", "-j1", "control-plane", "hardware",
+               f"NETLAB_SDK_DIR={stage / 'hardware/sdk/ies'}", f"NETLAB_LIBYANG_PREFIX={paths.libyang}")
+        secure_native_tree(stage)
+        build_directory = stage / "vendor/netlab/build"
+        build_stat = build_directory.stat()
+        if ((build_stat.st_mode & 0o022) or
+                (os.geteuid() == 0 and build_stat.st_uid != 0)):
+            raise ReleaseError("native daemon build directory is not trusted")
+        environment = {"LD_LIBRARY_PATH": f"{stage / 'hardware/sdk/ies/build'}:{paths.libyang / 'lib'}"}
+        for name in (*DAEMONS, "netlab-daemon-launch", "netlab-internal-rpc"):
+            binary = stage / "vendor/netlab/build" / name
+            binary_stat = binary.stat()
+            if ((binary_stat.st_mode & 0o022) or not (binary_stat.st_mode & stat.S_IXOTH) or
+                    (os.geteuid() == 0 and binary_stat.st_uid != 0)):
+                raise ReleaseError("native daemon executable is not trusted: " + name)
+            with binary.open("rb") as stream:
+                header = stream.read(20)
+            if len(header) != 20 or header[:6] != b"\x7fELF\x02\x01" or header[18:20] != b"\x3e\x00":
+                raise ReleaseError("incomplete amd64 native build: " + name)
+            linked = runner("ldd", "-r", binary, env=environment, timeout=30)
+            if "not found" in linked or "undefined symbol" in linked:
+                raise ReleaseError("unresolved native dependency: " + name)
+        return stage
 
 
 def service_text(name, paths):
@@ -234,7 +303,7 @@ def service_text(name, paths):
             ("PrivateIPC=yes\n" if name == "switchd" else "") + "\n[Install]\nWantedBy=fm10k-switch.target\n")
 
 
-def configure_native(paths: Paths, profile, management_ip, runner=run):
+def configure_native(paths: Paths, profile, management_interface, management_ip, runner=run):
     from .auth import Auth
     from .https_setup import prepare as prepare_https
     from .models import Credentials, SwitchConfiguration
@@ -253,7 +322,8 @@ def configure_native(paths: Paths, profile, management_ip, runner=run):
         except KeyError:
             runner("adduser", "--system", "--ingroup", user, "--no-create-home", user)
     runner("adduser", "fm10k-web", "netlab-ipc")
-    for directory, mode in ((paths.native_state, 0o700), (paths.boot, 0o755),
+    for directory, mode in ((paths.native_state, 0o700), (paths.etc, 0o755), (paths.boot, 0o755),
+                            (paths.native_state / "config", 0o700),
                             (paths.native_state / "config/journal", 0o700),
                             (paths.native_state / "config/rollback", 0o700), (paths.native_state / "scopes", 0o700)):
         directory.mkdir(parents=True, mode=mode, exist_ok=True)
@@ -314,6 +384,14 @@ def configure_native(paths: Paths, profile, management_ip, runner=run):
     if enabled.exists() or enabled.is_symlink():
         raise ReleaseError("an nginx panel site already exists")
     enabled.symlink_to(site)
+    wait_script = paths.etc / "wait-management.py"
+    atomic_write(wait_script, WAIT_MANAGEMENT_SCRIPT.encode(), 0o644)
+    nginx_dropin = paths.root / "etc/systemd/system/nginx.service.d/fm10k-controlpanel.conf"
+    atomic_write(nginx_dropin, (
+        "[Service]\n"
+        f"ExecCondition=/usr/bin/python3 -I -B {wait_script} {management_interface} {management_ip}\n"
+        "TimeoutStartSec=210\n"
+    ).encode(), 0o644)
     runner("nginx", "-t", timeout=30)
     runner("systemd-analyze", "verify", *[paths.root / f"etc/systemd/system/fm10k-{name}.service" for name in DAEMONS])
     runner("systemctl", "daemon-reload")
@@ -334,10 +412,17 @@ def snapshot():
         backend.close()
 
 
-def health(version, profile, expected_configuration, *, runner=run, read_snapshot=snapshot, timeout=180):
+def health(version, profile, expected_configuration, management_ip=None, *, runner=run, read_snapshot=snapshot,
+           timeout=180, tls_cert=None):
     deadline = time.monotonic() + timeout
     last_error = "native control is not ready"
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    https_opener = None
+    if management_ip is not None:
+        certificate = tls_cert or Paths().etc / "tls/server.crt"
+        context = ssl.create_default_context(cafile=str(certificate))
+        https_opener = urllib.request.build_opener(urllib.request.ProxyHandler({}),
+                                                   urllib.request.HTTPSHandler(context=context))
     while time.monotonic() < deadline:
         try:
             current = read_snapshot()
@@ -351,6 +436,13 @@ def health(version, profile, expected_configuration, *, runner=run, read_snapsho
                 web = json.loads(response.read(8192))
             if web != {"status": "ok", "mode": "netlab", "version": version}:
                 raise ReleaseError("installed Web version, mode or health does not match")
+            if https_opener is not None:
+                if runner("systemctl", "is-active", "nginx.service", timeout=15).strip() != "active":
+                    raise ReleaseError("nginx HTTPS service is not active")
+                with https_opener.open(management_url(management_ip) + "/api/v1/health", timeout=3) as response:
+                    https_web = json.loads(response.read(8192))
+                if https_web != web:
+                    raise ReleaseError("HTTPS health does not match the installed Web service")
             return current
         except Exception as error:
             last_error = str(error)
@@ -371,7 +463,7 @@ def install(source: Path, sdk: Path, platform_file: Path, interface: str, manage
     if os.geteuid() != 0:
         raise ReleaseError("run installation as root")
     paths = Paths()
-    with operation_lock(paths):
+    with native_build_umask(), operation_lock(paths):
         verify_bundle(source, version)
         report = preflight(source, sdk, platform_file, interface, management_ip, eye_firmware=eye_firmware)
         if not report["passed"]:
@@ -417,21 +509,31 @@ def install(source: Path, sdk: Path, platform_file: Path, interface: str, manage
             runner("modprobe", "fm10k", timeout=30)
             runner("modprobe", "i2c_i801", timeout=30)
             runner("modprobe", "i2c-dev", timeout=30)
-            configuration = configure_native(paths, report["profile"], management_ip, runner)
+            configuration = configure_native(paths, report["profile"], interface, management_ip, runner)
             start_services(runner)
             runner("systemctl", "start", "fm10k-time.socket", "fm10k-update.socket")
             runner("systemctl", "reload-or-restart", "nginx.service", timeout=45)
-            health(version, report["profile"], configuration)
+            health(version, report["profile"], configuration, management_ip)
+            runner("systemctl", "enable", *STARTUP_UNITS, "nginx.service")
             metadata.update(status="ready", installed_at=time.time())
             save(paths.installation, metadata)
-            runner("systemctl", "enable", "fm10k-switch.target", "fm10k-panel.service", "fm10k-time.socket",
-                   "fm10k-update.socket", "fm10k-update-worker.service", "nginx.service")
             print(json.dumps({"installed": True, "version": version, "profile": report["profile"],
                               "url": management_url(management_ip), "initial_credentials": str(paths.native_state / "initial-admin.json")}), flush=True)
-        except BaseException:
+        except BaseException as error:
             metadata["status"] = "installation_failed"
-            save(paths.installation, metadata)
-            stop_services(runner)
+            metadata.pop("installed_at", None)
+            cleanup_steps = [lambda: save(paths.installation, metadata)]
+            cleanup_steps.extend(lambda unit=unit: runner("systemctl", "disable", unit)
+                                 for unit in STARTUP_UNITS)
+            cleanup_steps.extend((
+                lambda: runner("systemctl", "stop", "fm10k-time.socket", "fm10k-update.socket"),
+                lambda: stop_services(runner),
+            ))
+            for cleanup in cleanup_steps:
+                try:
+                    cleanup()
+                except Exception as cleanup_error:
+                    error.add_note("installation cleanup failed: " + str(cleanup_error))
             raise
 
 

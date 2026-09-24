@@ -39,6 +39,7 @@ def test_debian_archive_is_deterministic_and_excludes_sdk(tmp_path):
         assert b"ProtectClock=yes" in helper and b"CapabilityBoundingSet=\n" in helper
         assert b"StandardInput=socket" in helper
         assert "./usr/share/fm10k-controlpanel/web/index.html" in names
+        assert not any("/._" in name or name.endswith("/.DS_Store") for name in names)
         documents = json.loads((root / "deploy/public-documents.json").read_text())
         doc_prefix = "./usr/share/doc/fm10k-controlpanel/"
         packaged_documents = {name[len(doc_prefix):] for name in names if name.startswith(doc_prefix)}

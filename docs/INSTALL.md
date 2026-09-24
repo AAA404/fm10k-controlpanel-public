@@ -9,6 +9,7 @@
 | 系统 | Debian 13、x86_64、systemd 为 PID 1，Python 3.11+；运行依赖由 Debian Python 3.13 提供 |
 | 内核 | 6.12 系列，已安装或 APT 索引中可取得当前内核的匹配 headers；若索引为空，先更新索引再运行检查 |
 | 板卡 | 唯一的 `8086:15a4 / 1374:01d0`，BDF `0000:01:00.0`；完整、校验通过的 Silicom VPD 与已支持 B0/A11 修订 |
+| PCI 资源 | 固件必须已为该 function 分配 BAR0（至少 1 MiB）及 BAR4；仅有 BAR2 时配套驱动无法绑定，检查阶段会拒绝安装 |
 | 驱动 | 首次安装自动构建 `fm10k-uio 6.12.101-ies2`；只允许未绑定或 fm10k 驱动，不能用于 VFIO/直通或多 function 共用驱动的环境 |
 | UIO | 最终 `/dev/uio0` 必须唯一对应上述 PCI function；已有不相关 UIO 设备时拒绝 |
 | SDK | 本地 IES 4.3.2 的固定头文件集合与两份 amd64 库，逐项匹配 `hardware/sdk-inputs.json` |
@@ -20,16 +21,18 @@
 
 Profile 与原厂输入取得方式见[构建说明](BUILD.md)。压缩包包含开源 libyang 2.1.148 源码及其锁定摘要，SDK、原厂平台和眼图参考微码均不随包提供。
 
+若固件已分配 BAR0/BAR4，但 Linux 启动日志出现 PCI bridge 资源重新分配失败并释放 BAR，可在已确认的板卡上试用 `pci=realloc=off` 启动参数，重启后用 `lspci -vv -s 01:00.0` 和安装检查确认两个 BAR 仍已分配。此参数属于主机启动配置；安装器不会自行修改 GRUB。管理地址通过 DHCP 获取时，安装器生成的 nginx 服务配置会等待指定网卡取得指定地址，再启动 HTTPS，并在安装健康检查中验证 HTTPS 入口。
+
 如需使用依赖参考微码的二维眼图路径，可先用 `scripts/prepare_eye_firmware.py` 转换合法取得的原始头文件，在检查和安装时额外传入 `--eye-firmware /path/to/sbus-master-101a.bin`。脚本核对锁定摘要并安装文件，不执行眼图采集；未提供时保留对应诊断能力限制。后续升级会校验并保留已安装的匹配微码。
 
 ## 取得并检查制品
 
-通过可信的仓库 Release 页面取得 `fm10k-controlpanel-0.2.0.tar.gz`、对应 `.deb`、`release-manifest.json` 和 `SHA256SUMS`。私有仓库可在工作站使用已授权的 GitHub CLI 下载；不用把工作站的凭据复制给设备。草稿仅供维护者审核，设备在线更新不会选中草稿。
+通过可信的仓库 Release 页面取得 `fm10k-controlpanel-0.2.1.tar.gz`、对应 `.deb`、`release-manifest.json` 和 `SHA256SUMS`。私有仓库可在工作站使用已授权的 GitHub CLI 下载；不用把工作站的凭据复制给设备。草稿仅供维护者审核，设备在线更新不会选中草稿。
 
 ```sh
 sha256sum -c SHA256SUMS
-tar -xzf fm10k-controlpanel-0.2.0.tar.gz
-cd fm10k-controlpanel-0.2.0
+tar -xzf fm10k-controlpanel-0.2.1.tar.gz
+cd fm10k-controlpanel-0.2.1
 sudo ./install.sh check \
   --sdk /path/to/ies \
   --platform /path/to/licensed-platform.cfg \
@@ -60,6 +63,7 @@ sudo ./install.sh install \
 安装目录为 `/opt/fm10k-controlpanel/native`，原生配置保存在 `/var/lib/fm10k-controlpanel-native/`。版本元数据与回退 Web 包保存在 `/var/lib/fm10k-controlpanel-updates/`，不要删除。在线更新需要这些数据证明旧版本可恢复。
 
 首次安装失败会记录 `installation_failed` 并尝试停止新服务，保留构建产物和配置供本地排查；不声称恢复一份不存在的旧交换系统。修复原因后应整理失败安装状态或恢复空白系统再重试，不能重复初始化已经有业务配置的安装。
+不要手工把 `installation.json` 改成 `ready` 或仅启用 systemd 服务来绕过失败状态；只有安装器的健康检查、开机启用及状态收尾全部成功，安装才算完成。对已失败的 v0.2.0 安装，应先恢复安装前的空白系统或单独制定恢复方案，再使用修复后的包验收。
 
 ## 后续更新与验收
 

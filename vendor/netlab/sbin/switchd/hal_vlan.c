@@ -166,6 +166,7 @@ int hal_get_stp_table(int sw, struct sdk_result *result) {
         fm_int cur_port;
         fm_int next_vlan;
         u32 port_count = 0;
+        u32 enumerated_port_count = 0;
 
         if (cur_vlan > 4094 || ++vlan_count > NL_STP_SNAPSHOT_MAX_VLANS)
             goto fail;
@@ -178,12 +179,16 @@ int hal_get_stp_table(int sw, struct sdk_result *result) {
         while (cur_port >= 0) {
             fm_int next_port;
 
-            if (++port_count > NL_STP_SNAPSHOT_MAX_PORTS)
+            if (++enumerated_port_count > 65536U)
                 goto fail;
             if (nl_ifid_is_user_port((int)cur_port)) {
                 nl_stp_snapshot_entry *entry;
                 fm_int stp_state;
 
+                /* CPU and internal SDK ports do not consume the 24 user-port
+                 * budget, but every SDK iterator step remains bounded. */
+                if (++port_count > NL_STP_SNAPSHOT_MAX_PORTS)
+                    goto fail;
                 if (cur_port > UINT16_MAX ||
                     snapshot.n_entries >= NL_STP_SNAPSHOT_MAX_ENTRIES)
                     goto fail;

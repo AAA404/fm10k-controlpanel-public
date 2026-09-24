@@ -1,4 +1,5 @@
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -193,6 +194,39 @@ def test_one_inactive_daemon_cannot_pass_whole_release_health(monkeypatch):
                       read_snapshot=lambda: {"configuration": configuration})
 
 
+def test_release_health_requires_nginx_and_trusted_https(monkeypatch, tmp_path):
+    configuration = {"profile": "sil001-hw5-a11"}
+    expected = {"status": "ok", "mode": "netlab", "version": "0.2.0"}
+    urls = []
+
+    class Opener:
+        def open(self, url, timeout):
+            urls.append(url)
+            return io.BytesIO(json.dumps(expected).encode())
+
+    monkeypatch.setattr(engine.ssl, "create_default_context", lambda **_: object())
+    monkeypatch.setattr(engine.urllib.request, "build_opener", lambda *_: Opener())
+
+    def runner(*args, **_):
+        if args[-1] == "nginx.service":
+            return "active\n"
+        return "\n".join(["active"] * (len(engine.SERVICES) + 1))
+
+    result = engine.health("0.2.0", configuration["profile"], configuration, "192.0.2.10",
+                           runner=runner, read_snapshot=lambda: {"configuration": configuration},
+                           tls_cert=tmp_path / "cert")
+    assert result["configuration"] == configuration
+    assert urls == ["http://127.0.0.1:8080/api/v1/health", "https://192.0.2.10/api/v1/health"]
+
+    ticks = iter([0, 0, 181])
+    monkeypatch.setattr(engine.time, "monotonic", lambda: next(ticks))
+    monkeypatch.setattr(engine.time, "sleep", lambda _: None)
+    with pytest.raises(ReleaseError, match="nginx HTTPS service is not active"):
+        engine.health("0.2.0", configuration["profile"], configuration, "192.0.2.10",
+                      runner=lambda *args, **_: "inactive\n" if args[-1] == "nginx.service" else runner(*args),
+                      read_snapshot=lambda: {"configuration": configuration}, tls_cert=tmp_path / "cert")
+
+
 def test_journal_write_failure_restarts_web_without_swapping_native(upgrade_fixture, monkeypatch):
     source, paths, options, commands, _, _ = upgrade_fixture
     original = engine.save
@@ -258,7 +292,11 @@ def test_new_install_generates_closed_configuration_and_private_credentials(tmp_
         assert args[0] in {"adduser", "systemd-tmpfiles", "nginx", "systemd-analyze", "systemctl"}
         commands.append(tuple(map(str,args)))
         return ""
-    result = engine.configure_native(paths, profile, "192.0.2.10", fake_command)
+    previous_umask = os.umask(0o002)
+    try:
+        result = engine.configure_native(paths, profile, "mgmt0", "192.0.2.10", fake_command)
+    finally:
+        os.umask(previous_umask)
     assert all(not port["enabled"] for port in result["ports"].values())
     assert decode_configuration((paths.boot / "active.conf").read_bytes()).profile == profile
     credentials = paths.native_state / "initial-admin.json"
@@ -266,4 +304,113 @@ def test_new_install_generates_closed_configuration_and_private_credentials(tmp_
     assert len(json.loads(credentials.read_bytes())["password"]) >= 24
     assert "NETLAB_FM10K_STARTUP_MODE=control" in (paths.etc / "native.env").read_text()
     assert (paths.etc / "tls/server.key").stat().st_mode & 0o777 == 0o600
+    for directory in (paths.native_state, paths.native_state / "config",
+                      paths.native_state / "config/journal", paths.native_state / "config/rollback"):
+        assert directory.stat().st_mode & 0o777 == 0o700
+    assert paths.etc.stat().st_mode & 0o777 == 0o755
+    assert paths.boot.stat().st_mode & 0o777 == 0o755
+    wait_script = paths.etc / "wait-management.py"
+    nginx_dropin = paths.root / "etc/systemd/system/nginx.service.d/fm10k-controlpanel.conf"
+    assert "address in assigned" in wait_script.read_text()
+    assert f"ExecCondition=/usr/bin/python3 -I -B {wait_script} mgmt0 192.0.2.10" in nginx_dropin.read_text()
+    assert "TimeoutStartSec=210" in nginx_dropin.read_text()
     assert all("start" not in command and "restart" not in command for command in commands)
+
+
+def test_native_stage_removes_group_write_even_with_wide_umask(tmp_path, monkeypatch):
+    source = tmp_path / "source"
+    (source / "vendor/netlab").mkdir(parents=True)
+    paths = engine.Paths(tmp_path / "host")
+    monkeypatch.setattr(engine, "verify_bundle", lambda *_: None)
+    monkeypatch.setattr(engine, "_copy_inputs", lambda *_: None)
+    observed_umasks = []
+
+    def fake_runner(*args, **kwargs):
+        if args[0] == "make":
+            previous = os.umask(0o022)
+            os.umask(previous)
+            observed_umasks.append(previous)
+            build = Path(args[2]) / "build"
+            build.mkdir()
+            build.chmod(0o775)
+            header = b"\x7fELF\x02\x01" + b"\x00" * 12 + b"\x3e\x00"
+            for name in (*engine.DAEMONS, "netlab-daemon-launch", "netlab-internal-rpc"):
+                binary = build / name
+                binary.write_bytes(header)
+                binary.chmod(0o775)
+            return ""
+        assert args[0] == "ldd"
+        return "all dependencies resolved"
+
+    previous_umask = os.umask(0o002)
+    try:
+        stage = engine.stage_native(source, tmp_path / "sdk", tmp_path / "platform",
+                                    "sil001-hw4-b0", paths, fake_runner)
+    finally:
+        os.umask(previous_umask)
+    assert observed_umasks == [0o022]
+    assert all(not (path.stat().st_mode & 0o022) for path in (stage, *stage.rglob("*")))
+    assert (stage / "vendor/netlab/build/netlab-daemon-launch").stat().st_mode & 0o111
+
+
+@pytest.mark.parametrize("failure", [None, "health", "enable"])
+def test_fresh_install_enables_only_after_health_and_cleans_partial_enable(tmp_path, monkeypatch, failure):
+    paths = engine.Paths(tmp_path / "host")
+    source = tmp_path / "source"
+    source.mkdir()
+    stage = paths.base / ".stage-test"
+    (stage / "packages").mkdir(parents=True)
+    (stage / "packages/fm10k-controlpanel_0.2.0_all.deb").write_bytes(b"synthetic web package")
+    (stage / "hardware").mkdir()
+    (stage / "hardware/sdk-inputs.json").write_text("{}")
+    (stage / "deploy").mkdir()
+    (stage / "deploy/release-dependencies.json").write_text("{}")
+    report = {"passed": True, "profile": "sil001-hw4-b0", "host": {"kernel": "6.12.107+deb13-amd64"},
+              "board": {"vpd_sha256": "synthetic-vpd", "driver": "fm10k"},
+              "driver_install_required": False}
+    events = []
+
+    monkeypatch.setattr(engine, "Paths", lambda: paths)
+    monkeypatch.setattr(engine.os, "geteuid", lambda: 0)
+    monkeypatch.setattr(engine, "verify_bundle", lambda *_: None)
+    monkeypatch.setattr(engine, "preflight", lambda *_a, **_k: report)
+    monkeypatch.setattr(engine, "build_libyang", lambda *_: None)
+    monkeypatch.setattr(engine, "stage_native", lambda *_a, **_k: stage)
+    monkeypatch.setattr(engine, "configure_native", lambda *_: {"profile": report["profile"]})
+    monkeypatch.setattr(engine, "start_services", lambda *_: events.append("start"))
+
+    def fake_health(*_):
+        events.append("health")
+        if failure == "health":
+            raise ReleaseError("synthetic health failure")
+
+    def fake_run(*args, **_kwargs):
+        events.append(tuple(map(str, args)))
+        if failure == "enable" and args[:2] == ("systemctl", "enable"):
+            raise ReleaseError("synthetic partial enable failure")
+        return ""
+
+    monkeypatch.setattr(engine, "health", fake_health)
+    monkeypatch.setattr(engine, "run", fake_run)
+    arguments = (source, tmp_path / "sdk", tmp_path / "platform", "mgmt0", "192.0.2.10", "0.2.0")
+    if failure:
+        with pytest.raises(ReleaseError, match="synthetic .* failure"):
+            engine.install(*arguments)
+    else:
+        engine.install(*arguments)
+    metadata = json.loads(paths.installation.read_bytes())
+    enables = [item for item in events if isinstance(item, tuple) and item[:2] == ("systemctl", "enable")]
+    disables = [item for item in events if isinstance(item, tuple) and item[:2] == ("systemctl", "disable")]
+    if failure:
+        assert metadata["status"] == "installation_failed" and "installed_at" not in metadata
+        if failure == "health":
+            assert not enables
+        else:
+            assert len(enables) == 1
+        assert [event[2] for event in disables] == list(engine.STARTUP_UNITS)
+        assert any(isinstance(item, tuple) and item[:3] == ("systemctl", "stop", "fm10k-time.socket")
+                   for item in events)
+    else:
+        assert metadata["status"] == "ready" and metadata["installed_at"]
+        assert len(enables) == 1 and not disables
+        assert events.index("health") < events.index(enables[0])

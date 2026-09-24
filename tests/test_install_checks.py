@@ -28,6 +28,10 @@ def installation_host(tmp_path, monkeypatch):
     for name, value in {"vendor":"0x8086","device":"0x15a4","subsystem_vendor":"0x1374","subsystem_device":"0x01d0","revision":"0x01"}.items():
         put(pci + "/" + name, value)
     put(pci + "/vpd", vpd())
+    resources = ["0x0 0x0 0x0"] * 13
+    resources[0] = "0x90000000 0x900fffff 0x200"
+    resources[4] = "0x91000000 0x910fffff 0x200"
+    put(pci + "/resource", "\n".join(resources) + "\n")
     (host / pci / "net/asic0").mkdir(parents=True)
     (host / "sys/class/net/mgmt0").mkdir(parents=True)
     (host / "sys/class/net/asic0").symlink_to(host / pci / "net/asic0", target_is_directory=True)
@@ -60,6 +64,18 @@ def test_fresh_host_allows_missing_driver_without_loading_it(installation_host):
     assert all(call[0] in {"ip","systemctl","apt-cache"} for call in calls)
     after = {p.relative_to(arguments["root"]).as_posix():p.read_bytes() for p in arguments["root"].rglob("*") if p.is_file()}
     assert after == before
+
+
+@pytest.mark.parametrize("index", [0, 4])
+def test_missing_required_pci_bar_fails_before_installation(installation_host, index):
+    arguments, put, _ = installation_host
+    resource = arguments["root"] / f"sys/bus/pci/devices/{checks.BDF}/resource"
+    rows = resource.read_text().splitlines()
+    rows[index] = "0x0 0x0 0x0"
+    put(f"sys/bus/pci/devices/{checks.BDF}/resource", "\n".join(rows) + "\n")
+    report = checks.preflight(**arguments)
+    assert not report["passed"] and "pci_apertures" in failed(report)
+    assert "board_identity" not in failed(report)
 
 
 @pytest.mark.parametrize("key,value,expected", [
