@@ -34,7 +34,8 @@ def upgrade_fixture(tmp_path, monkeypatch):
     (source / "packages").mkdir(parents=True)
     (source / "packages/fm10k-controlpanel_0.2.0_all.deb").write_bytes(b"new package")
     configuration = {"profile":"sil001-hw4-b0","ports":{"1":{"enabled":False}}}
-    snapshot = lambda:{"revision":1,"configuration":configuration,"hardware_write_ready":True,"pending":None}
+    # The panel protocol reports the durable commit ID plus one.
+    snapshot = lambda:{"revision":2,"configuration":configuration,"hardware_write_ready":True,"pending":None}
     monkeypatch.setattr(engine,"verify_bundle",lambda *_:{"version":"0.2.0"})
     monkeypatch.setattr(engine,"installed_metadata",lambda p:json.loads(p.installation.read_bytes()))
     monkeypatch.setattr(engine,"upgrade_admission",lambda *_:(tmp_path / "sdk",tmp_path / "platform"))

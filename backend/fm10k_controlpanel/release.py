@@ -8,6 +8,7 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 import tarfile
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -221,14 +222,17 @@ class GitHubReleases:
                    "User-Agent": "fm10k-controlpanel-release/1", "X-GitHub-Api-Version": "2022-11-28"}
         if self.token:
             headers["Authorization"] = "Bearer " + self.token
-        try:
-            return self.opener.open(urllib.request.Request(API + suffix, headers=headers), timeout=15)
-        except urllib.error.HTTPError as error:
-            messages = {401: "GitHub credential is invalid", 403: "GitHub access denied or API rate limit reached",
-                        404: "No published release is accessible; a private repository needs a read-only server credential"}
-            raise ReleaseError(messages.get(error.code, f"GitHub returned HTTP {error.code}")) from None
-        except (OSError, urllib.error.URLError):
-            raise ReleaseError("GitHub connection failed; check DNS, HTTPS access and system time") from None
+        for attempt in range(3):
+            try:
+                return self.opener.open(urllib.request.Request(API + suffix, headers=headers), timeout=15)
+            except urllib.error.HTTPError as error:
+                messages = {401: "GitHub credential is invalid", 403: "GitHub access denied or API rate limit reached",
+                            404: "No published release is accessible; a private repository needs a read-only server credential"}
+                raise ReleaseError(messages.get(error.code, f"GitHub returned HTTP {error.code}")) from None
+            except (OSError, urllib.error.URLError):
+                if attempt == 2:
+                    raise ReleaseError("GitHub connection failed; check DNS, HTTPS access and system time") from None
+                time.sleep(attempt + 1)
 
     def _bytes(self, suffix, limit, *, binary=False):
         with self._open(suffix, binary=binary) as response:

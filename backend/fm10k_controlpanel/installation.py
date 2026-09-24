@@ -656,7 +656,8 @@ def upgrade(source: Path, *, paths=None, runner=run, read_snapshot=snapshot, hea
     try:
         stop_services(runner)
         pointer = int((paths.native_state / "config/journal/tx_counter").read_text().strip())
-        if pointer != before["revision"]:
+        # configd exposes the active commit ID plus one as the panel revision.
+        if pointer + 1 != before["revision"]:
             raise ReleaseError("configuration changed while entering maintenance; retry the update")
         transaction["checkpoint_digests"] = {}
         for name, origin in (("etc", paths.etc), ("native-state", paths.native_state), ("web-state", paths.web_state)):

@@ -19,8 +19,8 @@
 
 ```sh
 sha256sum -c SHA256SUMS
-tar -xzf fm10k-controlpanel-0.2.1.tar.gz
-cd fm10k-controlpanel-0.2.1
+tar -xzf fm10k-controlpanel-0.2.2.tar.gz
+cd fm10k-controlpanel-0.2.2
 sudo ./install.sh check --sdk /path/to/ies --platform /path/to/licensed-platform.cfg \
   --management-interface mgmt0 --management-ip 192.0.2.10
 ```

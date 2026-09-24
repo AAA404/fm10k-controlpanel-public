@@ -64,7 +64,7 @@ SDK 存放在被忽略的 `hardware/sdk/`，不得混用其他版本的头文件
 
 ```sh
 python3 scripts/check_public.py --history
-python3 scripts/check_public.py --package artifacts/debian13/fm10k-controlpanel_0.2.1_all.deb
+python3 scripts/check_public.py --package artifacts/debian13/fm10k-controlpanel_0.2.2_all.deb
 ```
 
 打包文档白名单位于 `deploy/public-documents.json`。检查覆盖 Git 文件、可达历史和安装包内容；可以额外提供本地 `--private-markers <JSON文件>`，其内容为不应外发的字符串数组。该文件及检查产物应保存在忽略目录中。

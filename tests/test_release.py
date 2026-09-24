@@ -4,6 +4,7 @@ import io
 import json
 from pathlib import Path
 import tarfile
+import urllib.error
 import urllib.request
 
 import pytest
@@ -57,7 +58,29 @@ class Opener:
 
     def open(self, request, timeout):
         self.requests.append(request)
-        return io.BytesIO(self.responses.pop(0))
+        response = self.responses.pop(0)
+        if isinstance(response, Exception):
+            raise response
+        return io.BytesIO(response)
+
+
+def test_github_connection_retries_transient_open_failures(monkeypatch):
+    monkeypatch.setattr("fm10k_controlpanel.release.time.sleep", lambda _: None)
+    opener = Opener([urllib.error.URLError("temporary"), OSError("reset"), b"ok"])
+    assert GitHubReleases(opener=opener)._bytes("/releases/latest", 10) == b"ok"
+    assert len(opener.requests) == 3
+
+
+def test_github_connection_retry_is_bounded_and_http_errors_are_immediate(monkeypatch):
+    monkeypatch.setattr("fm10k_controlpanel.release.time.sleep", lambda _: None)
+    offline = Opener([urllib.error.URLError("offline") for _ in range(3)])
+    with pytest.raises(ReleaseError, match="GitHub connection failed"):
+        GitHubReleases(opener=offline)._bytes("/releases/latest", 10)
+    assert len(offline.requests) == 3
+    denied = Opener([urllib.error.HTTPError("https://api.github.com", 403, "denied", {}, None)])
+    with pytest.raises(ReleaseError, match="GitHub access denied"):
+        GitHubReleases(opener=denied)._bytes("/releases/latest", 10)
+    assert len(denied.requests) == 1
 
 
 def github_data(value=None):
